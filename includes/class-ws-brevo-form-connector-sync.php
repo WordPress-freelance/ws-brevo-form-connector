@@ -85,31 +85,6 @@ class WS_Brevo_FC_Sync {
     }
 
     /**
-     * Maps a flat field array to Brevo attributes using configured field names.
-     *
-     * @param array $fields Associative array: fieldName => value.
-     * @return array Brevo attributes.
-     */
-    public static function map_attributes( array $fields ) {
-        $map = array(
-            get_option( 'ws_brevo_fc_field_firstname', 'firstname' ) => 'PRENOM',
-            get_option( 'ws_brevo_fc_field_lastname',  'lastname' )  => 'NOM',
-            get_option( 'ws_brevo_fc_field_phone',     'phone' )     => 'SMS',
-            get_option( 'ws_brevo_fc_field_company',   'company' )   => 'SOCIETE',
-        );
-
-        $attributes = array();
-        foreach ( $fields as $name => $value ) {
-            $name  = strtolower( trim( (string) $name ) );
-            $value = sanitize_text_field( (string) $value );
-            if ( isset( $map[ $name ] ) && $value !== '' ) {
-                $attributes[ $map[ $name ] ] = $value;
-            }
-        }
-        return $attributes;
-    }
-
-    /**
      * Calls Brevo API POST /v3/contacts.
      *
      * @return array { ok: bool, msg: string, code: int }
