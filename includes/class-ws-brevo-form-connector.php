@@ -47,10 +47,10 @@ class WS_Brevo_Form_Connector {
     private function define_public_hooks() {
         $public = new WS_Brevo_FC_Public( $this->plugin_name, $this->version );
 
-        // Nonce injecté en footer pour les appels JS nopriv
-        $this->loader->add_action( 'wp_footer', $public, 'output_public_nonce' );
+        // Enqueue public JS + localize on every frontend page (unconditionally)
+        $this->loader->add_action( 'wp_enqueue_scripts', $public, 'enqueue_scripts' );
 
-        // Endpoint AJAX — utilisateurs connectés et non connectés
+        // AJAX endpoint — logged-in and logged-out users
         $this->loader->add_action( 'wp_ajax_ws_brevo_fc_submit',        $public, 'ajax_submit' );
         $this->loader->add_action( 'wp_ajax_nopriv_ws_brevo_fc_submit', $public, 'ajax_submit' );
     }

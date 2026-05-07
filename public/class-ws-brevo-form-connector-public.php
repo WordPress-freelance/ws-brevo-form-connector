@@ -2,10 +2,10 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * WS_Brevo_FC_Public
+ * Public-facing functionality.
  *
- * Expose l'endpoint AJAX universel (priv + nopriv) et injecte
- * le nonce en footer. Aucune dépendance à un plugin de formulaire.
+ * Enqueues the front-end JS script and exposes the AJAX endpoint.
+ * No dependency on any form plugin.
  */
 class WS_Brevo_FC_Public {
 
@@ -18,49 +18,62 @@ class WS_Brevo_FC_Public {
     }
 
     /**
-     * Injecte wsBrevoFCPublic en wp_footer.
+     * Enqueues the public JS and passes config via wp_localize_script.
+     * Hooked on wp_enqueue_scripts — runs unconditionally on every frontend page.
      *
-     * Utilisation JS :
-     *   fetch( wsBrevoFCPublic.ajaxurl, {
-     *     method: 'POST',
-     *     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-     *     body: new URLSearchParams({
-     *       action:    wsBrevoFCPublic.action,
-     *       nonce:     wsBrevoFCPublic.nonce,
-     *       email:     'john@example.com',
-     *       firstname: 'John',
-     *     })
-     *   });
+     * The JS will:
+     *   1. Listen on every <form> submit event.
+     *   2. Check whether the form contains an input whose name matches triggerField.
+     *   3. If found, map the other configured fields and POST to the AJAX endpoint.
      */
-    public function output_public_nonce() {
-        echo '<script>var wsBrevoFCPublic=' . wp_json_encode( array(
-            'ajaxurl' => admin_url( 'admin-ajax.php' ),
-            'nonce'   => wp_create_nonce( 'ws_brevo_fc_public' ),
-            'action'  => 'ws_brevo_fc_submit',
-        ) ) . ';</script>' . "\n";
+    public function enqueue_scripts() {
+        wp_enqueue_script(
+            $this->plugin_name,
+            WS_BREVO_FC_PLUGIN_URL . 'public/js/ws-brevo-form-connector-public.js',
+            array(),
+            $this->version,
+            true // load in footer
+        );
+
+        wp_localize_script( $this->plugin_name, 'wsBrevoFCPublic', array(
+            'ajaxurl'      => admin_url( 'admin-ajax.php' ),
+            'nonce'        => wp_create_nonce( 'ws_brevo_fc_public' ),
+            'action'       => 'ws_brevo_fc_submit',
+            // Trigger field: the input name the user must add to any form to opt-in
+            'triggerField' => get_option( 'ws_brevo_fc_trigger_field', 'ws-brevo-sync' ),
+            'listId'       => (int) get_option( 'ws_brevo_fc_default_list_id', 0 ),
+            // Field name mapping: what name= attribute maps to which Brevo attribute
+            'fields'       => array(
+                'email'     => get_option( 'ws_brevo_fc_field_email',     'email' ),
+                'firstname' => get_option( 'ws_brevo_fc_field_firstname', 'firstname' ),
+                'lastname'  => get_option( 'ws_brevo_fc_field_lastname',  'lastname' ),
+                'phone'     => get_option( 'ws_brevo_fc_field_phone',     'phone' ),
+                'company'   => get_option( 'ws_brevo_fc_field_company',   'company' ),
+            ),
+        ) );
     }
 
     /**
-     * Endpoint AJAX universel.
+     * Universal AJAX endpoint — logged-in and logged-out users.
      *
-     * Paramètres POST attendus :
-     *   action    — ws_brevo_fc_submit (obligatoire)
-     *   nonce     — wsBrevoFCPublic.nonce (obligatoire)
-     *   email     — adresse email (obligatoire)
-     *   firstname — prénom (optionnel)
-     *   lastname  — nom (optionnel)
-     *   phone     — téléphone (optionnel)
-     *   company   — entreprise (optionnel)
-     *   list_id   — ID liste Brevo (optionnel, override le défaut global)
-     *   form_id   — identifiant source (optionnel, pour les règles et le journal)
+     * Expected POST params:
+     *   action    — ws_brevo_fc_submit (required)
+     *   nonce     — from wsBrevoFCPublic.nonce (required)
+     *   email     — email address (required)
+     *   firstname — first name (optional)
+     *   lastname  — last name (optional)
+     *   phone     — phone number (optional)
+     *   company   — company name (optional)
+     *   list_id   — Brevo list ID override (optional)
+     *   form_id   — source identifier for rules & log (optional)
      *
-     * Réponse JSON :
+     * JSON response:
      *   { success: true,  data: { message: '...' } }
      *   { success: false, data: { message: '...' } }
      */
     public function ajax_submit() {
         if ( ! check_ajax_referer( 'ws_brevo_fc_public', 'nonce', false ) ) {
-            wp_send_json_error( array( 'message' => 'Nonce invalide.' ), 403 );
+            wp_send_json_error( array( 'message' => __( 'Invalid nonce.', 'ws-brevo-form-connector' ) ), 403 );
         }
 
         $email   = sanitize_email( wp_unslash( $_POST['email']   ?? '' ) );
@@ -78,7 +91,7 @@ class WS_Brevo_FC_Public {
         $result     = WS_Brevo_FC_Sync::contact( $email, $attributes, $list_id, $form_id );
 
         if ( $result['ok'] ) {
-            wp_send_json_success( array( 'message' => 'Contact synchronise.' ) );
+            wp_send_json_success( array( 'message' => __( 'Contact synced.', 'ws-brevo-form-connector' ) ) );
         } else {
             wp_send_json_error( array( 'message' => $result['msg'] ), 400 );
         }

@@ -437,3 +437,19 @@
 }
 
 .wsbfc-info strong { color: var(--accent-l); }
+
+/* ─── Code / snippet blocks ──────────────────── */
+.wsbfc-snippet,
+.wsbfc-code {
+    background: var(--bg-deep);
+    border: 0.5px solid var(--border-a);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: var(--accent-l);
+    font-size: 12px;
+    font-family: monospace;
+    overflow-x: auto;
+    margin: 8px 0 0;
+    white-space: pre;
+    display: block;
+}

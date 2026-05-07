@@ -4,7 +4,7 @@ Tags: brevo, sendinblue, email marketing, crm, ajax
 Requires at least: 5.6
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,7 +60,7 @@ Dans Brevo -> Contacts -> Listes, cliquez sur votre liste. L'ID est dans l'URL.
 
 == Changelog ==
 
-= 1.2.0 =
+= 1.3.0 =
 * Suppression de toutes les integrations specifiques aux plugins de formulaire
 * Plugin independant de tout builder — endpoint AJAX et PHP direct uniquement
 * Simplification classe Public : uniquement output_public_nonce() et ajax_submit()

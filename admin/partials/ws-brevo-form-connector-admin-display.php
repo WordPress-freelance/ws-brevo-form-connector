@@ -1,37 +1,39 @@
 <?php if ( ! defined( 'ABSPATH' ) ) exit; ?>
 <?php
-$api_key    = get_option( 'ws_brevo_fc_api_key', '' );
-$list_id    = get_option( 'ws_brevo_fc_default_list_id', '' );
-$f_first    = get_option( 'ws_brevo_fc_field_firstname', 'firstname' );
-$f_last     = get_option( 'ws_brevo_fc_field_lastname',  'lastname' );
-$f_phone    = get_option( 'ws_brevo_fc_field_phone',     'phone' );
-$f_company  = get_option( 'ws_brevo_fc_field_company',   'company' );
-$form_rules = json_decode( get_option( 'ws_brevo_fc_form_rules', '[]' ), true ) ?: array();
-$sync_log   = json_decode( get_option( 'ws_brevo_fc_sync_log',   '[]' ), true ) ?: array();
-$ajax_url   = admin_url( 'admin-ajax.php' );
+$api_key       = get_option( 'ws_brevo_fc_api_key', '' );
+$list_id       = get_option( 'ws_brevo_fc_default_list_id', '' );
+$trigger_field = get_option( 'ws_brevo_fc_trigger_field', 'ws-brevo-sync' );
+$f_email       = get_option( 'ws_brevo_fc_field_email',     'email' );
+$f_first       = get_option( 'ws_brevo_fc_field_firstname', 'firstname' );
+$f_last        = get_option( 'ws_brevo_fc_field_lastname',  'lastname' );
+$f_phone       = get_option( 'ws_brevo_fc_field_phone',     'phone' );
+$f_company     = get_option( 'ws_brevo_fc_field_company',   'company' );
+$form_rules    = json_decode( get_option( 'ws_brevo_fc_form_rules', '[]' ), true ) ?: array();
+$sync_log      = json_decode( get_option( 'ws_brevo_fc_sync_log',   '[]' ), true ) ?: array();
+$ajax_url      = admin_url( 'admin-ajax.php' );
 ?>
 
 <div class="ws-brevo-fc-wrap">
 
   <?php if ( isset( $_GET['saved'] ) ) : ?>
-  <div class="wsbfc-notice-ok">✓ Paramètres enregistrés.</div>
+  <div class="wsbfc-notice-ok"><?php esc_html_e( 'Settings saved.', 'ws-brevo-form-connector' ); ?></div>
   <?php endif; ?>
 
   <div class="wsbfc-header">
     <div class="wsbfc-logo">Web<br>Strategy</div>
     <div>
-      <div class="wsbfc-header-title">Brevo Form Connector</div>
-      <div class="wsbfc-header-sub">Connecteur universel WordPress → Brevo</div>
+      <div class="wsbfc-header-title"><?php esc_html_e( 'Brevo Form Connector', 'ws-brevo-form-connector' ); ?></div>
+      <div class="wsbfc-header-sub"><?php esc_html_e( 'Universal Brevo contact sync — no form plugin required', 'ws-brevo-form-connector' ); ?></div>
     </div>
     <span class="wsbfc-version">v<?php echo WS_BREVO_FC_VERSION; ?></span>
   </div>
 
   <div class="wsbfc-tabs">
-    <button class="wsbfc-tab active" data-tab="tab-settings">Configuration</button>
-    <button class="wsbfc-tab" data-tab="tab-mapping">Mapping champs</button>
-    <button class="wsbfc-tab" data-tab="tab-rules">Règles</button>
-    <button class="wsbfc-tab" data-tab="tab-ajax">Intégration</button>
-    <button class="wsbfc-tab" data-tab="tab-logs">Journal (<?php echo count( $sync_log ); ?>)</button>
+    <button class="wsbfc-tab active" data-tab="tab-settings"><?php esc_html_e( 'Configuration', 'ws-brevo-form-connector' ); ?></button>
+    <button class="wsbfc-tab" data-tab="tab-mapping"><?php esc_html_e( 'Field Mapping', 'ws-brevo-form-connector' ); ?></button>
+    <button class="wsbfc-tab" data-tab="tab-rules"><?php esc_html_e( 'Routing Rules', 'ws-brevo-form-connector' ); ?></button>
+    <button class="wsbfc-tab" data-tab="tab-ajax"><?php esc_html_e( 'AJAX Endpoint', 'ws-brevo-form-connector' ); ?></button>
+    <button class="wsbfc-tab" data-tab="tab-logs"><?php esc_html_e( 'Log', 'ws-brevo-form-connector' ); ?> (<?php echo count( $sync_log ); ?>)</button>
   </div>
 
   <form method="post" action="<?php echo admin_url( 'admin-post.php' ); ?>">
@@ -40,101 +42,128 @@ $ajax_url   = admin_url( 'admin-ajax.php' );
 
     <!-- ═══ CONFIGURATION ═══ -->
     <div id="tab-settings" class="wsbfc-panel active">
+
       <div class="wsbfc-card">
-        <div class="wsbfc-card-title">🔑 Connexion Brevo</div>
+        <div class="wsbfc-card-title">🔑 <?php esc_html_e( 'Brevo Connection', 'ws-brevo-form-connector' ); ?></div>
 
         <div class="wsbfc-field">
-          <label class="wsbfc-label" for="ws_brevo_fc_api_key">Clé API Brevo</label>
+          <label class="wsbfc-label" for="ws_brevo_fc_api_key"><?php esc_html_e( 'Brevo API Key', 'ws-brevo-form-connector' ); ?></label>
           <div class="wsbfc-api-row">
             <input type="password" id="ws_brevo_fc_api_key" name="ws_brevo_fc_api_key"
                    class="wsbfc-input mono"
                    value="<?php echo esc_attr( $api_key ); ?>"
                    placeholder="xkeysib-…" />
-            <button type="button" class="wsbfc-btn wsbfc-btn-ghost" id="wsbfc-toggle-key">Afficher</button>
-            <button type="button" class="wsbfc-btn wsbfc-btn-ghost" id="wsbfc-test-api">Tester la connexion</button>
+            <button type="button" class="wsbfc-btn wsbfc-btn-ghost" id="wsbfc-toggle-key"><?php esc_html_e( 'Show', 'ws-brevo-form-connector' ); ?></button>
+            <button type="button" class="wsbfc-btn wsbfc-btn-ghost" id="wsbfc-test-api"><?php esc_html_e( 'Test connection', 'ws-brevo-form-connector' ); ?></button>
           </div>
-          <div class="wsbfc-hint">Disponible dans Brevo → Paramètres → Clés API &amp; SMTP.</div>
+          <div class="wsbfc-hint"><?php esc_html_e( 'Found in Brevo → Settings → API Keys & SMTP.', 'ws-brevo-form-connector' ); ?></div>
           <div id="wsbfc-test-result" class="wsbfc-test-result"></div>
         </div>
 
         <div class="wsbfc-field">
-          <label class="wsbfc-label" for="ws_brevo_fc_default_list_id">ID de liste par défaut</label>
+          <label class="wsbfc-label" for="ws_brevo_fc_default_list_id"><?php esc_html_e( 'Default List ID', 'ws-brevo-form-connector' ); ?></label>
           <input type="number" id="ws_brevo_fc_default_list_id" name="ws_brevo_fc_default_list_id"
                  class="wsbfc-input" style="max-width:160px;"
                  value="<?php echo esc_attr( $list_id ); ?>"
-                 placeholder="ex: 3" min="1" />
-          <div class="wsbfc-hint">Toutes les soumissions sans règle spécifique atterrissent dans cette liste.</div>
+                 placeholder="e.g. 3" min="1" />
+          <div class="wsbfc-hint"><?php esc_html_e( 'Visible in Brevo → Contacts → Lists → list URL.', 'ws-brevo-form-connector' ); ?></div>
         </div>
       </div>
+
+      <div class="wsbfc-card">
+        <div class="wsbfc-card-title">⚡ <?php esc_html_e( 'Trigger Field', 'ws-brevo-form-connector' ); ?></div>
+
+        <div class="wsbfc-info">
+          <?php esc_html_e( 'Add a hidden input with this exact name to every form you want to sync. The plugin JS will detect it and send the contact to Brevo.', 'ws-brevo-form-connector' ); ?>
+        </div>
+
+        <div class="wsbfc-field">
+          <label class="wsbfc-label" for="ws_brevo_fc_trigger_field"><?php esc_html_e( 'Trigger field name (name= attribute)', 'ws-brevo-form-connector' ); ?></label>
+          <input type="text" id="ws_brevo_fc_trigger_field" name="ws_brevo_fc_trigger_field"
+                 class="wsbfc-input mono"
+                 value="<?php echo esc_attr( $trigger_field ); ?>"
+                 placeholder="ws-brevo-sync" />
+          <div class="wsbfc-hint"><?php esc_html_e( 'Copy this into your forms as a hidden input:', 'ws-brevo-form-connector' ); ?></div>
+          <pre class="wsbfc-snippet">&lt;input type="hidden" name="<?php echo esc_attr( $trigger_field ); ?>" value="1"&gt;</pre>
+        </div>
+      </div>
+
       <div class="wsbfc-form-actions">
-        <button type="submit" class="wsbfc-btn wsbfc-btn-primary">Enregistrer</button>
+        <button type="submit" class="wsbfc-btn wsbfc-btn-primary"><?php esc_html_e( 'Save settings', 'ws-brevo-form-connector' ); ?></button>
       </div>
     </div>
 
-    <!-- ═══ MAPPING ═══ -->
+    <!-- ═══ FIELD MAPPING ═══ -->
     <div id="tab-mapping" class="wsbfc-panel">
       <div class="wsbfc-info">
-        Ces noms de paramètres sont ceux que vous envoyez dans vos appels AJAX ou PHP. Modifiez-les uniquement si vous utilisez une convention différente dans votre code.
+        <?php esc_html_e( 'Enter the input name= attribute used in your forms for each field. The JS reads these to map form values to Brevo contact attributes.', 'ws-brevo-form-connector' ); ?>
       </div>
       <div class="wsbfc-card">
-        <div class="wsbfc-card-title">📋 Paramètres → Attributs Brevo</div>
+        <div class="wsbfc-card-title">📋 <?php esc_html_e( 'Form fields → Brevo attributes', 'ws-brevo-form-connector' ); ?></div>
         <div class="wsbfc-mapping-grid">
 
           <div class="wsbfc-field">
-            <label class="wsbfc-label">Paramètre Prénom</label>
+            <label class="wsbfc-label"><?php esc_html_e( 'Email field *', 'ws-brevo-form-connector' ); ?></label>
+            <input type="text" name="ws_brevo_fc_field_email" class="wsbfc-input"
+                   value="<?php echo esc_attr( $f_email ); ?>" placeholder="email" />
+            <div class="wsbfc-hint">→ EMAIL <?php esc_html_e( '(required)', 'ws-brevo-form-connector' ); ?></div>
+          </div>
+
+          <div class="wsbfc-field">
+            <label class="wsbfc-label"><?php esc_html_e( 'First name field', 'ws-brevo-form-connector' ); ?></label>
             <input type="text" name="ws_brevo_fc_field_firstname" class="wsbfc-input"
                    value="<?php echo esc_attr( $f_first ); ?>" placeholder="firstname" />
-            <div class="wsbfc-hint">→ attribut Brevo PRENOM</div>
+            <div class="wsbfc-hint">→ PRENOM</div>
           </div>
 
           <div class="wsbfc-field">
-            <label class="wsbfc-label">Paramètre Nom</label>
+            <label class="wsbfc-label"><?php esc_html_e( 'Last name field', 'ws-brevo-form-connector' ); ?></label>
             <input type="text" name="ws_brevo_fc_field_lastname" class="wsbfc-input"
                    value="<?php echo esc_attr( $f_last ); ?>" placeholder="lastname" />
-            <div class="wsbfc-hint">→ attribut Brevo NOM</div>
+            <div class="wsbfc-hint">→ NOM</div>
           </div>
 
           <div class="wsbfc-field">
-            <label class="wsbfc-label">Paramètre Téléphone</label>
+            <label class="wsbfc-label"><?php esc_html_e( 'Phone field', 'ws-brevo-form-connector' ); ?></label>
             <input type="text" name="ws_brevo_fc_field_phone" class="wsbfc-input"
                    value="<?php echo esc_attr( $f_phone ); ?>" placeholder="phone" />
-            <div class="wsbfc-hint">→ attribut Brevo SMS</div>
+            <div class="wsbfc-hint">→ SMS</div>
           </div>
 
           <div class="wsbfc-field">
-            <label class="wsbfc-label">Paramètre Entreprise</label>
+            <label class="wsbfc-label"><?php esc_html_e( 'Company field', 'ws-brevo-form-connector' ); ?></label>
             <input type="text" name="ws_brevo_fc_field_company" class="wsbfc-input"
                    value="<?php echo esc_attr( $f_company ); ?>" placeholder="company" />
-            <div class="wsbfc-hint">→ attribut Brevo SOCIETE</div>
+            <div class="wsbfc-hint">→ SOCIETE</div>
           </div>
 
         </div>
       </div>
       <div class="wsbfc-form-actions">
-        <button type="submit" class="wsbfc-btn wsbfc-btn-primary">Enregistrer</button>
+        <button type="submit" class="wsbfc-btn wsbfc-btn-primary"><?php esc_html_e( 'Save settings', 'ws-brevo-form-connector' ); ?></button>
       </div>
     </div>
 
-    <!-- ═══ RÈGLES ═══ -->
+    <!-- ═══ ROUTING RULES ═══ -->
     <div id="tab-rules" class="wsbfc-panel">
       <div class="wsbfc-info">
-        Routez certains appels vers une liste Brevo spécifique en fonction du <strong>form_id</strong> passé dans la requête. Vous pouvez aussi désactiver la sync pour un form_id donné en décochant le toggle.
+        <?php esc_html_e( 'Route a specific form_id to a different Brevo list, or disable sync entirely for it. The form_id appears in the log after a first submission.', 'ws-brevo-form-connector' ); ?>
       </div>
       <div class="wsbfc-card">
-        <div class="wsbfc-card-title">🔀 Règles par form_id</div>
+        <div class="wsbfc-card-title">🔀 <?php esc_html_e( 'Rules by source', 'ws-brevo-form-connector' ); ?></div>
         <table class="wsbfc-rules-table">
           <thead>
             <tr>
               <th style="width:35%">form_id</th>
-              <th style="width:30%">ID liste Brevo</th>
-              <th style="width:20%;text-align:center;">Actif</th>
+              <th style="width:30%"><?php esc_html_e( 'Brevo list ID', 'ws-brevo-form-connector' ); ?></th>
+              <th style="width:20%;text-align:center;"><?php esc_html_e( 'Active', 'ws-brevo-form-connector' ); ?></th>
               <th></th>
             </tr>
           </thead>
           <tbody id="wsbfc-rules-tbody">
             <?php foreach ( $form_rules as $rule ) : ?>
             <tr class="wsbfc-rule-row">
-              <td><input type="text" name="form_rule_id[]" value="<?php echo esc_attr( $rule['form_id'] ?? '' ); ?>" placeholder="ex: contact" /></td>
+              <td><input type="text" name="form_rule_id[]" value="<?php echo esc_attr( $rule['form_id'] ?? '' ); ?>" placeholder="contact" /></td>
               <td><input type="number" name="form_rule_list_id[]" value="<?php echo esc_attr( $rule['list_id'] ?? '' ); ?>" placeholder="3" min="0" /></td>
               <td style="text-align:center;">
                 <label class="wsbfc-toggle">
@@ -142,28 +171,29 @@ $ajax_url   = admin_url( 'admin-ajax.php' );
                   <span class="wsbfc-toggle-slider"></span>
                 </label>
               </td>
-              <td><button type="button" class="wsbfc-remove-rule" title="Supprimer">×</button></td>
+              <td><button type="button" class="wsbfc-remove-rule" title="<?php esc_attr_e( 'Remove', 'ws-brevo-form-connector' ); ?>">×</button></td>
             </tr>
             <?php endforeach; ?>
           </tbody>
         </table>
         <div class="wsbfc-add-rule">
-          <button type="button" class="wsbfc-btn wsbfc-btn-ghost" id="wsbfc-add-rule">+ Ajouter une règle</button>
+          <button type="button" class="wsbfc-btn wsbfc-btn-ghost" id="wsbfc-add-rule">+ <?php esc_html_e( 'Add rule', 'ws-brevo-form-connector' ); ?></button>
         </div>
       </div>
       <div class="wsbfc-form-actions">
-        <button type="submit" class="wsbfc-btn wsbfc-btn-primary">Enregistrer</button>
+        <button type="submit" class="wsbfc-btn wsbfc-btn-primary"><?php esc_html_e( 'Save settings', 'ws-brevo-form-connector' ); ?></button>
       </div>
     </div>
 
-  </form>
+  </form><!-- end form -->
 
-  <!-- ═══ INTÉGRATION ═══ -->
+  <!-- ═══ AJAX ENDPOINT ═══ -->
   <div id="tab-ajax" class="wsbfc-panel">
     <div class="wsbfc-card">
-      <div class="wsbfc-card-title">⚡ Endpoint AJAX</div>
-      <div class="wsbfc-info" style="margin-bottom:20px;">
-        Cet endpoint accepte n'importe quelle source — formulaire natif HTML, JS custom, plugin tiers via hook PHP. L'objet <code>wsBrevoFC</code> est automatiquement disponible sur toutes les pages frontend.
+      <div class="wsbfc-card-title">⚡ <?php esc_html_e( 'Universal AJAX endpoint', 'ws-brevo-form-connector' ); ?></div>
+
+      <div class="wsbfc-info">
+        <?php esc_html_e( 'Available for logged-in and logged-out users (wp_ajax + wp_ajax_nopriv). The wsBrevoFCPublic config object is automatically injected in wp_footer on every frontend page.', 'ws-brevo-form-connector' ); ?>
       </div>
 
       <div class="wsbfc-field">
@@ -174,70 +204,73 @@ $ajax_url   = admin_url( 'admin-ajax.php' );
       </div>
 
       <div class="wsbfc-field">
-        <label class="wsbfc-label">Paramètres POST</label>
-<pre style="background:var(--bg-deep);border:0.5px solid var(--border-a);border-radius:8px;padding:16px;color:var(--accent-l);font-size:12px;font-family:monospace;overflow-x:auto;margin:0;">action    = ws_brevo_fc_submit     <span style="color:var(--t4);">// obligatoire</span>
-nonce     = wsBrevoFC.nonce        <span style="color:var(--t4);">// obligatoire</span>
-email     = john@example.com       <span style="color:var(--t4);">// obligatoire</span>
-firstname = John                   <span style="color:var(--t4);">// optionnel</span>
-lastname  = Doe                    <span style="color:var(--t4);">// optionnel</span>
-phone     = +33600000000           <span style="color:var(--t4);">// optionnel</span>
-company   = ACME                   <span style="color:var(--t4);">// optionnel</span>
-list_id   = 3                      <span style="color:var(--t4);">// optionnel — override la liste par défaut</span>
-form_id   = contact                <span style="color:var(--t4);">// optionnel — pour les règles et le journal</span></pre>
+        <label class="wsbfc-label">POST params</label>
+        <pre class="wsbfc-code">action    = ws_brevo_fc_submit          // required
+nonce     = wsBrevoFCPublic.nonce       // required
+email     = john@example.com            // required
+firstname = John                        // optional
+lastname  = Doe                         // optional
+phone     = +33600000000                // optional
+company   = ACME                        // optional
+list_id   = 3                           // optional — overrides default
+form_id   = my-custom-source           // optional — for rules & log</pre>
       </div>
 
       <div class="wsbfc-field">
-        <label class="wsbfc-label">JavaScript</label>
-<pre style="background:var(--bg-deep);border:0.5px solid var(--border-a);border-radius:8px;padding:16px;color:var(--t2);font-size:12px;font-family:monospace;overflow-x:auto;margin:0;"><span style="color:var(--accent-mid);">// wsBrevoFC est injecté automatiquement en wp_footer</span>
-fetch(wsBrevoFC.ajaxurl, {
-  method: 'POST',
+        <label class="wsbfc-label">JS example</label>
+        <pre class="wsbfc-code">fetch(wsBrevoFCPublic.ajaxurl, {
+  method:  'POST',
   headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
   body: new URLSearchParams({
-    action:    wsBrevoFC.action,
-    nonce:     wsBrevoFC.nonce,
+    action:    wsBrevoFCPublic.action,
+    nonce:     wsBrevoFCPublic.nonce,
     email:     'john@example.com',
     firstname: 'John',
-    lastname:  'Doe',
-    form_id:   'contact',
-  })
-}).then(r => r.json()).then(console.log);</pre>
+    form_id:   'my-form',
+  }).toString(),
+});</pre>
       </div>
 
       <div class="wsbfc-field">
-        <label class="wsbfc-label">PHP direct</label>
-<pre style="background:var(--bg-deep);border:0.5px solid var(--border-a);border-radius:8px;padding:16px;color:var(--t2);font-size:12px;font-family:monospace;overflow-x:auto;margin:0;">WS_Brevo_FC_Sync::contact(
+        <label class="wsbfc-label">PHP direct call</label>
+        <pre class="wsbfc-code">WS_Brevo_FC_Sync::contact(
     'john@example.com',
     [ 'PRENOM' => 'John', 'NOM' => 'Doe' ],
-    3,          <span style="color:var(--accent-mid);">// list_id (0 = défaut global)</span>
-    'contact'   <span style="color:var(--accent-mid);">// form_id pour le journal</span>
+    3,            // list_id (0 = global default)
+    'my-hook'     // form_id for log
 );</pre>
       </div>
+
     </div>
   </div>
 
-  <!-- ═══ JOURNAL ═══ -->
+  <!-- ═══ LOG ═══ -->
   <div id="tab-logs" class="wsbfc-panel">
     <div class="wsbfc-card">
       <div class="wsbfc-log-header">
-        <div class="wsbfc-card-title" style="margin-bottom:0;padding-bottom:0;border-bottom:none;">📋 Journal</div>
+        <div class="wsbfc-card-title" style="margin-bottom:0;padding-bottom:0;border-bottom:none;">
+          📋 <?php esc_html_e( 'Sync log', 'ws-brevo-form-connector' ); ?>
+        </div>
         <?php if ( ! empty( $sync_log ) ) : ?>
-        <button type="button" class="wsbfc-btn wsbfc-btn-danger" id="wsbfc-clear-log">Vider</button>
+        <button type="button" class="wsbfc-btn wsbfc-btn-danger" id="wsbfc-clear-log">
+          <?php esc_html_e( 'Clear log', 'ws-brevo-form-connector' ); ?>
+        </button>
         <?php endif; ?>
       </div>
       <div style="border-bottom:0.5px solid var(--border);margin:12px 0;"></div>
 
       <?php if ( empty( $sync_log ) ) : ?>
-        <div class="wsbfc-log-empty">Aucune synchronisation enregistrée.</div>
+        <div class="wsbfc-log-empty"><?php esc_html_e( 'No sync recorded yet.', 'ws-brevo-form-connector' ); ?></div>
       <?php else : ?>
         <table class="wsbfc-log-table">
           <thead>
             <tr>
-              <th style="width:16%">Date</th>
-              <th style="width:28%">Email</th>
-              <th style="width:18%">form_id</th>
-              <th style="width:10%">Liste</th>
-              <th style="width:12%">Statut</th>
-              <th>Détail</th>
+              <th style="width:16%"><?php esc_html_e( 'Date', 'ws-brevo-form-connector' ); ?></th>
+              <th style="width:26%"><?php esc_html_e( 'Email', 'ws-brevo-form-connector' ); ?></th>
+              <th style="width:20%"><?php esc_html_e( 'Source', 'ws-brevo-form-connector' ); ?></th>
+              <th style="width:10%"><?php esc_html_e( 'List', 'ws-brevo-form-connector' ); ?></th>
+              <th style="width:12%"><?php esc_html_e( 'Status', 'ws-brevo-form-connector' ); ?></th>
+              <th><?php esc_html_e( 'Detail', 'ws-brevo-form-connector' ); ?></th>
             </tr>
           </thead>
           <tbody>
@@ -250,7 +283,7 @@ fetch(wsBrevoFC.ajaxurl, {
               <td>
                 <?php $ok = ( $entry['status'] ?? '' ) === 'ok'; ?>
                 <span class="wsbfc-log-status <?php echo $ok ? 'ok' : 'fail'; ?>">
-                  <?php echo $ok ? '✓ OK' : '✗ Erreur'; ?>
+                  <?php echo $ok ? esc_html__( '✓ OK', 'ws-brevo-form-connector' ) : esc_html__( '✗ Error', 'ws-brevo-form-connector' ); ?>
                 </span>
               </td>
               <td style="color:var(--t4);font-size:11px;"><?php echo esc_html( $entry['msg'] ?? '' ); ?></td>

@@ -2,54 +2,54 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * WS_Brevo_FC_Sync
+ * Core sync class — static, callable from anywhere.
  *
- * Classe statique centrale. Point d'entrée unique pour toute synchronisation
- * vers Brevo, appelable depuis n'importe quel contexte (form builders,
- * AJAX, code custom).
- *
- * Usage direct depuis du code custom :
+ * Direct usage from custom code:
  *   WS_Brevo_FC_Sync::contact( 'john@example.com', [
  *       'PRENOM'  => 'John',
  *       'NOM'     => 'Doe',
- *   ], 3, 'mon-formulaire' );
+ *   ], 3, 'my-source' );
  */
 class WS_Brevo_FC_Sync {
 
     /**
-     * Point d'entrée principal.
+     * Main entry point.
      *
-     * @param string $email      Adresse email (obligatoire).
-     * @param array  $attributes Attributs Brevo (PRENOM, NOM, SMS, SOCIETE…).
-     * @param int    $list_id    ID de liste Brevo. 0 = utiliser le défaut global.
-     * @param string $form_id    Identifiant du formulaire source (pour les règles + le journal).
+     * @param string $email      Email address (required).
+     * @param array  $attributes Brevo attributes (PRENOM, NOM, SMS, SOCIETE…).
+     * @param int    $list_id    Brevo list ID. 0 = use global default.
+     * @param string $form_id    Source identifier (used for rules & log).
      *
-     * @return array ['ok'=>bool, 'msg'=>string, 'code'=>int]
+     * @return array { ok: bool, msg: string, code: int }
      */
     public static function contact( $email, array $attributes = array(), $list_id = 0, $form_id = '' ) {
         $api_key = get_option( 'ws_brevo_fc_api_key', '' );
         if ( empty( $api_key ) ) {
-            return array( 'ok' => false, 'msg' => 'Cle API manquante.', 'code' => 0 );
+            return array( 'ok' => false, 'msg' => 'API key not configured.', 'code' => 0 );
         }
 
         $email = sanitize_email( $email );
         if ( ! is_email( $email ) ) {
-            return array( 'ok' => false, 'msg' => 'Email invalide.', 'code' => 0 );
+            return array( 'ok' => false, 'msg' => 'Invalid email address.', 'code' => 0 );
         }
 
-        // Résoudre la liste : règle form_id > paramètre > défaut global
+        // Resolve target list: form rule > parameter > global default
         $resolved_list = self::resolve_list( $form_id, $list_id );
         if ( $resolved_list === false ) {
-            // Règle de formulaire explicitement désactivée
-            return array( 'ok' => true, 'msg' => 'Sync desactivee pour ce formulaire.', 'code' => 0 );
+            // Sync explicitly disabled for this source
+            return array( 'ok' => true, 'msg' => 'Sync disabled for this source.', 'code' => 0 );
         }
 
         $result = self::push( $api_key, $email, $attributes, (int) $resolved_list );
         self::log( $email, $form_id, (int) $resolved_list, $result );
 
         /**
-         * Hook post-sync pour extensions ou code custom.
-         * do_action( 'ws_brevo_fc_after_sync', $email, $attributes, $resolved_list, $result );
+         * Fires after a sync attempt, successful or not.
+         *
+         * @param string $email         Contact email.
+         * @param array  $attributes    Brevo attributes sent.
+         * @param int    $resolved_list Resolved list ID.
+         * @param array  $result        { ok, msg, code }
          */
         do_action( 'ws_brevo_fc_after_sync', $email, $attributes, $resolved_list, $result );
 
@@ -57,11 +57,14 @@ class WS_Brevo_FC_Sync {
     }
 
     /**
-     * Résout l'ID de liste cible.
-     * Retourne false si une règle active désactive la sync pour ce formulaire
-     * (list_id = 0 ET active = 1 signifie "sync désactivée").
+     * Resolves the target list ID for a given source.
      *
-     * @return int|false  ID de liste résolu, ou false si sync désactivée.
+     * Returns false if a rule explicitly disables sync for this source.
+     *
+     * @param string $form_id          Source identifier.
+     * @param int    $fallback_list_id Caller-provided fallback (0 = use global default).
+     *
+     * @return int|false Resolved list ID, or false if sync is disabled.
      */
     public static function resolve_list( $form_id, $fallback_list_id = 0 ) {
         $form_id = (string) $form_id;
@@ -70,24 +73,22 @@ class WS_Brevo_FC_Sync {
         if ( is_array( $rules ) && $form_id !== '' ) {
             foreach ( $rules as $rule ) {
                 if ( (string) ( $rule['form_id'] ?? '' ) === $form_id ) {
-                    if ( empty( $rule['active'] ) ) return false; // désactivé explicitement
+                    if ( empty( $rule['active'] ) ) return false;
                     $lid = (int) ( $rule['list_id'] ?? 0 );
                     return $lid > 0 ? $lid : (int) get_option( 'ws_brevo_fc_default_list_id', 0 );
                 }
             }
         }
 
-        // Pas de règle spécifique : fallback paramètre puis défaut global
         if ( $fallback_list_id > 0 ) return $fallback_list_id;
         return (int) get_option( 'ws_brevo_fc_default_list_id', 0 );
     }
 
     /**
-     * Construit les attributs Brevo depuis un tableau plat de champs de formulaire.
-     * Lit le mapping configuré dans les options.
+     * Maps a flat field array to Brevo attributes using configured field names.
      *
-     * @param array $fields Tableau associatif fieldName => value.
-     * @return array Attributs Brevo.
+     * @param array $fields Associative array: fieldName => value.
+     * @return array Brevo attributes.
      */
     public static function map_attributes( array $fields ) {
         $map = array(
@@ -109,7 +110,9 @@ class WS_Brevo_FC_Sync {
     }
 
     /**
-     * Appel API Brevo POST /v3/contacts.
+     * Calls Brevo API POST /v3/contacts.
+     *
+     * @return array { ok: bool, msg: string, code: int }
      */
     private static function push( $api_key, $email, array $attributes, int $list_id ) {
         $body = array( 'email' => $email, 'updateEnabled' => true );
@@ -141,7 +144,7 @@ class WS_Brevo_FC_Sync {
     }
 
     /**
-     * Journalise une entrée (max 50, FIFO).
+     * Appends an entry to the sync log (max 50, FIFO).
      */
     private static function log( $email, $form_id, $list_id, array $result ) {
         $log = json_decode( get_option( 'ws_brevo_fc_sync_log', '[]' ), true );
