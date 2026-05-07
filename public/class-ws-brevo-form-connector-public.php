@@ -80,15 +80,16 @@ class WS_Brevo_FC_Public {
         $form_id = sanitize_text_field( wp_unslash( $_POST['form_id'] ?? 'ajax' ) );
         $list_id = absint( $_POST['list_id'] ?? 0 );
 
-        $fields = array(
-            get_option( 'ws_brevo_fc_field_firstname', 'firstname' ) => sanitize_text_field( wp_unslash( $_POST['firstname'] ?? '' ) ),
-            get_option( 'ws_brevo_fc_field_lastname',  'lastname' )  => sanitize_text_field( wp_unslash( $_POST['lastname']  ?? '' ) ),
-            get_option( 'ws_brevo_fc_field_phone',     'phone' )     => sanitize_text_field( wp_unslash( $_POST['phone']     ?? '' ) ),
-            get_option( 'ws_brevo_fc_field_company',   'company' )   => sanitize_text_field( wp_unslash( $_POST['company']   ?? '' ) ),
-        );
+        // The JS already resolves field names from config and sends normalized keys.
+        // Map directly to Brevo attributes — no option lookup needed here.
+        $attributes = array_filter( array(
+            'PRENOM'  => sanitize_text_field( wp_unslash( $_POST['firstname'] ?? '' ) ),
+            'NOM'     => sanitize_text_field( wp_unslash( $_POST['lastname']  ?? '' ) ),
+            'SMS'     => sanitize_text_field( wp_unslash( $_POST['phone']     ?? '' ) ),
+            'SOCIETE' => sanitize_text_field( wp_unslash( $_POST['company']   ?? '' ) ),
+        ) );
 
-        $attributes = WS_Brevo_FC_Sync::map_attributes( $fields );
-        $result     = WS_Brevo_FC_Sync::contact( $email, $attributes, $list_id, $form_id );
+        $result = WS_Brevo_FC_Sync::contact( $email, $attributes, $list_id, $form_id );
 
         if ( $result['ok'] ) {
             wp_send_json_success( array( 'message' => __( 'Contact synced.', 'ws-brevo-form-connector' ) ) );
