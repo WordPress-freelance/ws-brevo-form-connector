@@ -1,0 +1,439 @@
+/* WS Brevo Form Connector — Admin CSS */
+
+/* ─── Variables ──────────────────────────────── */
+.ws-brevo-fc-page {
+    --bg:           #14121C;
+    --bg-alt:       #1A1724;
+    --bg-deep:      #221D32;
+    --border:       #2E2B38;
+    --border-a:     #4A4260;
+    --accent:       #7C5CBF;
+    --accent-mid:   #9B8EC4;
+    --accent-l:     #A899D4;
+    --t1:           #F0EDE8;
+    --t2:           #C4BFDA;
+    --t3:           #9590A8;
+    --t4:           #4A4260;
+    --green:        #6BC98A;
+    --red:          #E05C5C;
+    --yellow:       #E8A93A;
+}
+
+/* ─── Layout page ────────────────────────────── */
+.ws-brevo-fc-wrap {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    padding: 28px 32px 60px;
+    color: var(--t2);
+    box-sizing: border-box;
+}
+
+.ws-brevo-fc-wrap * { box-sizing: border-box; }
+
+/* ─── Header ─────────────────────────────────── */
+.wsbfc-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.wsbfc-logo {
+    width: 44px;
+    height: 44px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Lora', serif;
+    font-size: 10px;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    line-height: 1.2;
+    flex-shrink: 0;
+}
+
+.wsbfc-header-title {
+    font-family: 'Lora', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--t1);
+    line-height: 1.2;
+}
+
+.wsbfc-header-sub {
+    font-size: 12px;
+    color: var(--t3);
+    margin-top: 2px;
+}
+
+.wsbfc-version {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--t4);
+    background: var(--bg-alt);
+    border: 0.5px solid var(--border);
+    border-radius: 99px;
+    padding: 4px 12px;
+}
+
+/* ─── Tabs ───────────────────────────────────── */
+.wsbfc-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 24px;
+}
+
+.wsbfc-tab {
+    font-size: 13px;
+    color: var(--t3);
+    padding: 10px 20px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color .15s, border-color .15s;
+    user-select: none;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font-family: 'Inter', sans-serif;
+}
+
+.wsbfc-tab:hover { color: var(--t2); }
+
+.wsbfc-tab.active {
+    color: var(--t1);
+    border-bottom-color: var(--accent);
+}
+
+.wsbfc-panel { display: none; }
+.wsbfc-panel.active { display: block; }
+
+/* ─── Saved notice ───────────────────────────── */
+.wsbfc-notice-ok {
+    background: rgba(107,201,138,.08);
+    border: 0.5px solid rgba(107,201,138,.25);
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--green);
+}
+
+/* ─── Cards ──────────────────────────────────── */
+.wsbfc-card {
+    background: var(--bg-alt);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+    margin-bottom: 16px;
+}
+
+.wsbfc-card-title {
+    font-family: 'Lora', serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--t1);
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ─── Fields ─────────────────────────────────── */
+.wsbfc-field {
+    margin-bottom: 18px;
+}
+
+.wsbfc-field:last-child { margin-bottom: 0; }
+
+.wsbfc-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--t3);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: 7px;
+}
+
+.wsbfc-input,
+.wsbfc-select {
+    width: 100%;
+    max-width: 480px;
+    background: var(--bg-deep);
+    border: 0.5px solid var(--border-a);
+    border-radius: 7px;
+    padding: 10px 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--accent-l);
+    outline: none;
+    transition: border-color .15s;
+}
+
+.wsbfc-input:focus,
+.wsbfc-select:focus { border-color: var(--accent); }
+
+.wsbfc-input.mono { font-family: monospace; font-size: 12px; }
+
+.wsbfc-hint {
+    font-size: 11px;
+    color: var(--t4);
+    margin-top: 5px;
+}
+
+/* ─── Field mapping grid ─────────────────────── */
+.wsbfc-mapping-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* ─── API test ───────────────────────────────── */
+.wsbfc-api-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.wsbfc-api-row .wsbfc-input { flex: 1; min-width: 0; }
+
+.wsbfc-test-result {
+    margin-top: 10px;
+    font-size: 12px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    display: none;
+}
+
+.wsbfc-test-result.ok {
+    background: rgba(107,201,138,.08);
+    border: 0.5px solid rgba(107,201,138,.25);
+    color: var(--green);
+    display: block;
+}
+
+.wsbfc-test-result.fail {
+    background: rgba(224,92,92,.08);
+    border: 0.5px solid rgba(224,92,92,.25);
+    color: var(--red);
+    display: block;
+}
+
+/* ─── Boutons ────────────────────────────────── */
+.wsbfc-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background .15s;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.wsbfc-btn-primary { background: var(--accent); color: #fff; }
+.wsbfc-btn-primary:hover { background: #6B4DAF; color: #fff; }
+
+.wsbfc-btn-ghost {
+    background: var(--bg-deep);
+    color: var(--accent-mid);
+    border: 0.5px solid var(--border-a);
+}
+.wsbfc-btn-ghost:hover { border-color: var(--accent); color: var(--accent-l); }
+
+.wsbfc-btn-danger { background: rgba(224,92,92,.12); color: var(--red); border: 0.5px solid rgba(224,92,92,.3); }
+.wsbfc-btn-danger:hover { background: rgba(224,92,92,.2); }
+
+.wsbfc-form-actions {
+    padding-top: 20px;
+    border-top: 0.5px solid var(--border);
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* ─── Rules table ────────────────────────────── */
+.wsbfc-rules-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.wsbfc-rules-table th {
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--t3);
+    padding: 0 10px 10px;
+    border-bottom: 0.5px solid var(--border);
+    font-weight: 500;
+}
+
+.wsbfc-rules-table th:first-child { padding-left: 0; }
+
+.wsbfc-rules-table td {
+    padding: 10px;
+    border-bottom: 0.5px solid var(--border);
+    vertical-align: middle;
+}
+
+.wsbfc-rules-table td:first-child { padding-left: 0; }
+.wsbfc-rules-table tr:last-child td { border-bottom: none; }
+
+.wsbfc-rules-table input[type="text"],
+.wsbfc-rules-table input[type="number"] {
+    background: var(--bg-deep);
+    border: 0.5px solid var(--border-a);
+    border-radius: 6px;
+    padding: 7px 10px;
+    color: var(--accent-l);
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    width: 100%;
+}
+
+.wsbfc-rules-table input:focus { border-color: var(--accent); }
+
+.wsbfc-add-rule {
+    margin-top: 12px;
+}
+
+.wsbfc-remove-rule {
+    background: none;
+    border: none;
+    color: var(--t4);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0 4px;
+    transition: color .15s;
+}
+
+.wsbfc-remove-rule:hover { color: var(--red); }
+
+/* ─── Toggle checkbox ────────────────────────── */
+.wsbfc-toggle {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.wsbfc-toggle input { opacity: 0; width: 0; height: 0; }
+
+.wsbfc-toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: var(--border-a);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+.wsbfc-toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 14px; height: 14px;
+    left: 3px; top: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform .2s;
+}
+
+.wsbfc-toggle input:checked + .wsbfc-toggle-slider { background: var(--accent); }
+.wsbfc-toggle input:checked + .wsbfc-toggle-slider::before { transform: translateX(16px); }
+
+/* ─── Log table ──────────────────────────────── */
+.wsbfc-log-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.wsbfc-log-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.wsbfc-log-table th {
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--t3);
+    padding: 0 10px 10px;
+    border-bottom: 0.5px solid var(--border);
+    font-weight: 500;
+}
+
+.wsbfc-log-table th:first-child { padding-left: 0; }
+
+.wsbfc-log-table td {
+    padding: 9px 10px;
+    border-bottom: 0.5px solid var(--border);
+    color: var(--t2);
+    vertical-align: top;
+}
+
+.wsbfc-log-table td:first-child { padding-left: 0; color: var(--t4); font-size: 11px; }
+.wsbfc-log-table tr:last-child td { border-bottom: none; }
+
+.wsbfc-log-email { color: var(--accent-l); font-family: monospace; }
+
+.wsbfc-log-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 99px;
+}
+
+.wsbfc-log-status.ok {
+    background: rgba(107,201,138,.08);
+    color: var(--green);
+}
+
+.wsbfc-log-status.fail {
+    background: rgba(224,92,92,.08);
+    color: var(--red);
+}
+
+.wsbfc-log-empty {
+    text-align: center;
+    color: var(--t4);
+    padding: 32px 0;
+    font-size: 13px;
+}
+
+/* ─── Info bloc ──────────────────────────────── */
+.wsbfc-info {
+    background: rgba(124,92,191,.06);
+    border: 0.5px solid rgba(124,92,191,.2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 12px;
+    color: var(--accent-mid);
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.wsbfc-info strong { color: var(--accent-l); }
