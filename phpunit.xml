@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.6/phpunit.xsd"
+    bootstrap="tests/bootstrap.php"
+    colors="true"
+    verbose="true"
+>
+    <testsuites>
+        <testsuite name="WS Brevo Form Connector">
+            <directory>tests/Unit</directory>
+        </testsuite>
+    </testsuites>
+
+    <coverage>
+        <include>
+            <directory suffix=".php">includes</directory>
+            <directory suffix=".php">admin</directory>
+            <directory suffix=".php">public</directory>
+        </include>
+        <exclude>
+            <file>includes/class-ws-brevo-form-connector-i18n.php</file>
+            <file>includes/class-ws-brevo-form-connector-loader.php</file>
+            <file>includes/class-ws-brevo-form-connector-deactivator.php</file>
+        </exclude>
+        <report>
+            <html outputDirectory="coverage/html"/>
+            <clover outputFile="coverage/clover.xml"/>
+            <text outputFile="php://stdout" showUncoveredFiles="false"/>
+        </report>
+    </coverage>
+</phpunit>

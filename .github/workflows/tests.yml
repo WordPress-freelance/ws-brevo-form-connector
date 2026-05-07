@@ -24,35 +24,35 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: mbstring, json
-          coverage: ${{ matrix.php == '8.2' && 'xdebug' || 'none' }}
+          extensions: xdebug
+          coverage: xdebug
           tools: composer:v2
-
-      - name: Validate composer.json
-        run: composer validate --strict
 
       - name: Cache Composer dependencies
         uses: actions/cache@v4
         with:
           path: vendor
-          key: php-${{ matrix.php }}-composer-${{ hashFiles('composer.lock') }}
-          restore-keys: php-${{ matrix.php }}-composer-
+          key: ${{ runner.os }}-php-${{ matrix.php }}-${{ hashFiles('composer.lock') }}
+          restore-keys: ${{ runner.os }}-php-${{ matrix.php }}-
 
       - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
-
-      - name: Run tests (no coverage)
-        if: matrix.php != '8.2'
-        run: composer test
+        run: composer install --prefer-dist --no-progress --no-interaction
 
       - name: Run tests with coverage
-        if: matrix.php == '8.2'
         run: composer test:coverage
 
       - name: Upload coverage report
-        if: matrix.php == '8.2'
         uses: actions/upload-artifact@v4
+        if: matrix.php == '8.1'
         with:
           name: coverage-report
-          path: coverage/
+          path: coverage/html
           retention-days: 14
+
+      - name: Upload Clover to Codecov
+        uses: codecov/codecov-action@v4
+        if: matrix.php == '8.1'
+        with:
+          files: coverage/clover.xml
+          flags: unittests
+          fail_ci_if_error: false
