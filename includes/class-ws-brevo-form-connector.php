@@ -39,6 +39,8 @@ class WS_Brevo_Form_Connector {
         $this->loader->add_filter( 'admin_body_class',      $admin, 'add_admin_body_class' );
         $this->loader->add_action( 'admin_head',            $admin, 'inline_reset_css' );
 
+        $this->loader->add_filter( 'plugin_action_links_ws-brevo-form-connector/ws-brevo-form-connector.php', $admin, 'plugin_action_links' );
+
         $this->loader->add_action( 'admin_post_ws_brevo_fc_save_settings', $admin, 'save_settings' );
         $this->loader->add_action( 'wp_ajax_ws_brevo_fc_test_api',         $admin, 'ajax_test_api' );
         $this->loader->add_action( 'wp_ajax_ws_brevo_fc_clear_log',        $admin, 'ajax_clear_log' );

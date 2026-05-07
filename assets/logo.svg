@@ -1,0 +1,34 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <rect width="256" height="256" rx="32" fill="#14121C"/>
+
+  <!-- Left: form card -->
+  <rect x="28" y="68" width="82" height="100" rx="8" fill="#1A1724" stroke="#4A4260" stroke-width="1.5"/>
+  <line x1="42" y1="90" x2="72" y2="90" stroke="#4A4260" stroke-width="2" stroke-linecap="round"/>
+  <rect x="42" y="97" width="54" height="10" rx="3" fill="#221D32" stroke="#4A4260" stroke-width="1"/>
+  <line x1="42" y1="117" x2="64" y2="117" stroke="#4A4260" stroke-width="2" stroke-linecap="round"/>
+  <rect x="42" y="124" width="54" height="10" rx="3" fill="#221D32" stroke="#4A4260" stroke-width="1"/>
+  <line x1="42" y1="144" x2="70" y2="144" stroke="#A899D4" stroke-width="2" stroke-linecap="round"/>
+  <rect x="42" y="151" width="54" height="10" rx="3" fill="#221D32" stroke="#7C5CBF" stroke-width="1.5"/>
+  <rect x="42" y="169" width="30" height="8" rx="4" fill="#7C5CBF"/>
+
+  <!-- Connector arrow -->
+  <path d="M 118 118 C 134 118, 134 118, 148 118" fill="none" stroke="#7C5CBF" stroke-width="2.5" stroke-linecap="round"/>
+  <polyline points="143,113 149,118 143,123" fill="none" stroke="#7C5CBF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="125" cy="118" r="2.5" fill="#A899D4"/>
+  <circle cx="134" cy="118" r="2" fill="#4A4260"/>
+  <circle cx="143" cy="118" r="2.5" fill="#7C5CBF"/>
+
+  <!-- Right: contact circle -->
+  <circle cx="190" cy="118" r="38" fill="#1A1724" stroke="#4A4260" stroke-width="1.5"/>
+  <circle cx="190" cy="118" r="38" fill="none" stroke="#4A4260" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <circle cx="190" cy="105" r="11" fill="#7C5CBF"/>
+  <path d="M165 143 Q165 126 190 126 Q215 126 215 143" fill="#7C5CBF" opacity="0.85"/>
+  <circle cx="218" cy="93" r="11" fill="#14121C" stroke="#7C5CBF" stroke-width="1.5"/>
+  <polyline points="213,93 217,97 224,88" fill="none" stroke="#A899D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Wordmark -->
+  <text x="128" y="196" text-anchor="middle" font-family="Georgia, serif" font-size="11" font-weight="600" fill="#F0EDE8" letter-spacing="3">BREVO</text>
+  <text x="128" y="210" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="400" fill="#9590A8" letter-spacing="2.5">FORM CONNECTOR</text>
+  <line x1="60" y1="201" x2="98" y2="201" stroke="#2E2B38" stroke-width="0.75"/>
+  <line x1="158" y1="201" x2="196" y2="201" stroke="#2E2B38" stroke-width="0.75"/>
+</svg>

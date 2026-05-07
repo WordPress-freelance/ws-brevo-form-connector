@@ -20,7 +20,7 @@ $ajax_url      = admin_url( 'admin-ajax.php' );
   <?php endif; ?>
 
   <div class="wsbfc-header">
-    <div class="wsbfc-logo">Web<br>Strategy</div>
+    <img src="<?php echo esc_url( WS_BREVO_FC_PLUGIN_URL . 'assets/logo.svg' ); ?>" alt="WS Brevo Form Connector" width="44" height="44" style="border-radius:10px;flex-shrink:0;" />
     <div>
       <div class="wsbfc-header-title"><?php esc_html_e( 'Brevo Form Connector', 'ws-brevo-form-connector' ); ?></div>
       <div class="wsbfc-header-sub"><?php esc_html_e( 'Universal Brevo contact sync — no form plugin required', 'ws-brevo-form-connector' ); ?></div>

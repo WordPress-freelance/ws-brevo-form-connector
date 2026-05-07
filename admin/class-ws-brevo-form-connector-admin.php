@@ -11,6 +11,14 @@ class WS_Brevo_FC_Admin {
         $this->version     = $version;
     }
 
+    public function plugin_action_links( $links ) {
+        $custom = array(
+            '<a href="https://plugins.wordpress-freelance.com" target="_blank" rel="noopener">' . __( 'More plugins', 'ws-brevo-form-connector' ) . '</a>',
+            '<a href="' . admin_url( 'admin.php?page=' . $this->plugin_name ) . '">' . __( 'Settings', 'ws-brevo-form-connector' ) . '</a>',
+        );
+        return array_merge( $custom, $links );
+    }
+
     public function enqueue_styles( $hook ) {
         if ( strpos( $hook, 'ws-brevo-form-connector' ) === false ) return;
         wp_enqueue_style(
