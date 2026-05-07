@@ -150,19 +150,20 @@
 .wsbfc-select {
     width: 100%;
     max-width: 480px;
-    background: var(--bg-deep);
-    border: 0.5px solid var(--border-a);
+    background: #221D32 !important;
+    border: 0.5px solid #4A4260 !important;
     border-radius: 7px;
     padding: 10px 14px;
     font-family: 'Inter', sans-serif;
     font-size: 13px;
-    color: var(--accent-l);
+    color: #A899D4 !important;
     outline: none;
     transition: border-color .15s;
+    box-shadow: none !important;
 }
 
 .wsbfc-input:focus,
-.wsbfc-select:focus { border-color: var(--accent); }
+.wsbfc-select:focus { border-color: #7C5CBF !important; }
 
 .wsbfc-input.mono { font-family: monospace; font-size: 12px; }
 
@@ -281,18 +282,19 @@
 
 .wsbfc-rules-table input[type="text"],
 .wsbfc-rules-table input[type="number"] {
-    background: var(--bg-deep);
-    border: 0.5px solid var(--border-a);
+    background: #221D32 !important;
+    border: 0.5px solid #4A4260 !important;
     border-radius: 6px;
     padding: 7px 10px;
-    color: var(--accent-l);
+    color: #A899D4 !important;
     font-size: 12px;
     font-family: 'Inter', sans-serif;
     outline: none;
     width: 100%;
+    box-shadow: none !important;
 }
 
-.wsbfc-rules-table input:focus { border-color: var(--accent); }
+.wsbfc-rules-table input:focus { border-color: #7C5CBF !important; }
 
 .wsbfc-add-rule {
     margin-top: 12px;
