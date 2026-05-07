@@ -8,68 +8,68 @@ Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Synchronise des contacts vers Brevo via un endpoint AJAX universel et une API PHP. Indépendant de tout plugin de formulaire.
+Connecteur universel Brevo pour WordPress. Synchronisez vos contacts via endpoint AJAX ou appel PHP direct, independamment de tout plugin de formulaire.
 
 == Description ==
 
-WS Brevo Form Connector est une brique d'infrastructure : il expose un endpoint AJAX et une méthode PHP statique pour pousser des contacts vers Brevo depuis n'importe quelle source — formulaire custom, script JS, hook WordPress, autre plugin.
+WS Brevo Form Connector expose un endpoint AJAX securise (utilisateurs connectes et non connectes) et une API PHP statique pour synchroniser n'importe quel contact dans votre base Brevo.
 
-Le plugin ne dépend d'aucun builder de formulaires et n'en nécessite aucun.
+Le plugin est volontairement independant de tout plugin de formulaire. C'est a vous de l'appeler depuis votre code, votre formulaire HTML natif, ou n'importe quel evenement JavaScript.
 
-**Endpoint AJAX universel**
+**Fonctionnement**
 
-Disponible pour les utilisateurs connectés et non connectés (wp_ajax + wp_ajax_nopriv). Le nonce est injecté automatiquement en footer via l'objet JS `wsBrevoFCPublic`.
+L'objet JavaScript `wsBrevoFC` est automatiquement injecte sur toutes les pages frontend. Il contient l'URL AJAX, le nonce et le nom d'action.
 
-**API PHP**
+Pour les developpeurs, `WS_Brevo_FC_Sync::contact()` est appelable directement depuis n'importe quel hook PHP.
 
-Appelez `WS_Brevo_FC_Sync::contact()` directement depuis n'importe quel hook ou plugin tiers.
+**Fonctionnalites**
 
-**Fonctionnalités**
-
-* Endpoint AJAX priv + nopriv avec vérification de nonce
-* Mapping des champs POST → attributs Brevo configurable en admin
-* Règles par source : dirigez chaque origine vers une liste Brevo différente
-* Journal des synchronisations (50 dernières entrées)
-* Test de connexion API intégré
-* Hook `ws_brevo_fc_after_sync` pour extensions tierces
+* Endpoint AJAX universel securise par nonce (connecte + non connecte)
+* API PHP statique `WS_Brevo_FC_Sync::contact()` pour les integrations serveur
+* Mapping des parametres vers les attributs Brevo (PRENOM, NOM, SMS, SOCIETE)
+* Regles de routage par form_id vers des listes Brevo differentes
+* Desactivation selective par form_id
+* Journal des 50 dernieres synchronisations
+* Test de connexion API integre
 
 == Installation ==
 
 1. Activez le plugin depuis l'administration WordPress.
-2. Rendez-vous dans **Brevo Connector** dans le menu.
-3. Saisissez votre clé API Brevo (Brevo → Paramètres → Clés API & SMTP).
+2. Allez dans **Brevo Connector** dans le menu.
+3. Saisissez votre cle API Brevo (Brevo -> Parametres -> Cles API & SMTP).
 4. Renseignez l'ID de votre liste Brevo cible.
-5. Configurez le mapping des champs si nécessaire.
+5. Integrez l'endpoint dans votre code (voir onglet Integration).
 
 == Frequently Asked Questions ==
 
-= Quels plugins de formulaires sont supportés ? =
+= Comment appeler l'endpoint depuis du JavaScript ? =
 
-Aucun en particulier — et c'est voulu. Le plugin expose un endpoint AJAX et une méthode PHP que vous branchez sur la source de votre choix.
+L'objet `wsBrevoFC` est disponible sur toutes les pages frontend. Envoyez une requete POST vers `wsBrevoFC.ajaxurl` avec `action`, `nonce`, `email`, et les champs optionnels `firstname`, `lastname`, `phone`, `company`, `list_id`, `form_id`.
 
-= Comment intégrer avec mon formulaire custom ? =
+= Comment appeler depuis du PHP ? =
 
-Utilisez l'endpoint AJAX documenté dans l'onglet "Endpoint AJAX" de la page de configuration, ou appelez `WS_Brevo_FC_Sync::contact()` directement en PHP.
+`WS_Brevo_FC_Sync::contact( 'email@example.com', ['PRENOM' => 'Jean'], 3, 'mon-hook' );`
+
+= A quoi sert le form_id ? =
+
+Identifiant libre que vous choisissez pour chaque source d'appel. Il apparait dans le journal et permet de definir des regles de routage vers des listes Brevo differentes.
 
 = Comment trouver mon ID de liste Brevo ? =
 
-Dans Brevo, allez dans Contacts → Listes, cliquez sur votre liste. L'ID est visible dans l'URL.
-
-= Comment désactiver la sync pour une source précise ? =
-
-Dans l'onglet "Règles par source", ajoutez une règle avec l'identifiant de la source (visible dans le journal) et désactivez le toggle.
+Dans Brevo -> Contacts -> Listes, cliquez sur votre liste. L'ID est dans l'URL.
 
 == Changelog ==
 
 = 1.2.0 =
-* Suppression de tous les adaptateurs spécifiques aux builders de formulaires
-* Plugin entièrement indépendant de tout plugin tiers
-* Simplification de l'architecture : endpoint AJAX + API PHP uniquement
+* Suppression de toutes les integrations specifiques aux plugins de formulaire
+* Plugin independant de tout builder — endpoint AJAX et PHP direct uniquement
+* Simplification classe Public : uniquement output_public_nonce() et ajax_submit()
+* Simplification orchestrateur : uniquement les hooks AJAX dans define_public_hooks()
 
 = 1.1.0 =
-* Ajout endpoint AJAX universel (wp_ajax + wp_ajax_nopriv)
-* Nonce public injecté automatiquement en wp_footer
-* Classe WS_Brevo_FC_Sync statique — point d'entrée unique
+* Endpoint AJAX universel (wp_ajax + wp_ajax_nopriv)
+* Nonce public injecte automatiquement en wp_footer
+* Classe WS_Brevo_FC_Sync statique — point d'entree unique
 * Hook post-sync ws_brevo_fc_after_sync
 
 = 1.0.0 =
