@@ -76,12 +76,14 @@ class WS_Brevo_FC_Admin {
     public function inline_reset_css() {
         $screen = get_current_screen();
         if ( ! $screen || strpos( $screen->id, 'ws-brevo-form-connector' ) === false ) return;
-        // Override Avada and competing themes that inject white backgrounds
+        // Fix Avada and competing themes that inject white backgrounds into admin pages
         echo '<style>
         .ws-brevo-fc-page #wpwrap,
         .ws-brevo-fc-page #wpcontent,
-        .ws-brevo-fc-page #wpbody-content { background: transparent !important; }
-        .ws-brevo-fc-page .wrap { margin: 0 !important; padding: 0 !important; background: transparent !important; max-width: none !important; }
+        .ws-brevo-fc-page #wpbody,
+        .ws-brevo-fc-page #wpbody-content { background: #14121C !important; padding: 0 !important; margin: 0 !important; }
+        .ws-brevo-fc-page .wrap,
+        .ws-brevo-fc-page #wpcontent .wrap { margin: 0 !important; padding: 0 !important; background: #14121C !important; max-width: none !important; }
         </style>';
     }
 
