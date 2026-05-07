@@ -2,8 +2,8 @@
 /**
  * Plugin Name:      WS Brevo Form Connector
  * Plugin URI:       https://wordpress.org/plugins/ws-brevo-form-connector/
- * Description:      Synchronise les soumissions de n'importe quel formulaire WordPress avec vos contacts Brevo. Compatible CF7, Gravity Forms, WPForms, Elementor, Avada, Ninja Forms, Fluent Forms, Formidable.
- * Version:          1.1.0
+ * Description:      Connecteur universel Brevo pour WordPress. Synchronise vos contacts via endpoint AJAX (nopriv + priv) ou appel PHP direct — indépendant de tout plugin de formulaire.
+ * Version:          1.2.0
  * Author:           WebStrategy
  * Author URI:       https://wordpress-freelance.com
  * License:          GPL-2.0+
@@ -16,7 +16,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'WS_BREVO_FC_VERSION',     '1.1.0' );
+define( 'WS_BREVO_FC_VERSION',     '1.2.0' );
 define( 'WS_BREVO_FC_PLUGIN_FILE', __FILE__ );
 define( 'WS_BREVO_FC_PLUGIN_DIR',  plugin_dir_path( __FILE__ ) );
 define( 'WS_BREVO_FC_PLUGIN_URL',  plugin_dir_url( __FILE__ ) );

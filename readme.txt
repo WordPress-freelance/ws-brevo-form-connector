@@ -1,89 +1,76 @@
 === WS Brevo Form Connector ===
 Contributors: webstrategy
-Tags: brevo, sendinblue, contact form, email marketing, crm
+Tags: brevo, sendinblue, email marketing, crm, ajax
 Requires at least: 5.6
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Synchronise les soumissions de n'importe quel formulaire WordPress avec vos contacts Brevo.
+Synchronise des contacts vers Brevo via un endpoint AJAX universel et une API PHP. Indépendant de tout plugin de formulaire.
 
 == Description ==
 
-WS Brevo Form Connector intercepte les soumissions de formulaires WordPress — quel que soit le builder utilisé — et synchronise automatiquement les contacts dans votre base Brevo.
+WS Brevo Form Connector est une brique d'infrastructure : il expose un endpoint AJAX et une méthode PHP statique pour pousser des contacts vers Brevo depuis n'importe quelle source — formulaire custom, script JS, hook WordPress, autre plugin.
 
-**Builders supportés nativement**
-
-* Contact Form 7
-* Gravity Forms
-* WPForms
-* Elementor Forms Pro
-* Avada / Fusion Forms
-* Ninja Forms
-* Fluent Forms
-* Formidable Forms
+Le plugin ne dépend d'aucun builder de formulaires et n'en nécessite aucun.
 
 **Endpoint AJAX universel**
 
-Pour tout autre formulaire ou implémentation JavaScript custom, un endpoint AJAX est disponible (utilisateurs connectés et non connectés). Le nonce est injecté automatiquement en footer.
+Disponible pour les utilisateurs connectés et non connectés (wp_ajax + wp_ajax_nopriv). Le nonce est injecté automatiquement en footer via l'objet JS `wsBrevoFCPublic`.
+
+**API PHP**
+
+Appelez `WS_Brevo_FC_Sync::contact()` directement depuis n'importe quel hook ou plugin tiers.
 
 **Fonctionnalités**
 
-* Configuration en quelques clics : clé API Brevo, liste cible, mapping des champs
-* Règles par formulaire : dirigez chaque formulaire vers une liste Brevo différente
-* Désactivez la synchronisation sur des formulaires spécifiques
-* Journal des synchronisations (50 dernières entrées) avec statut OK/Erreur
+* Endpoint AJAX priv + nopriv avec vérification de nonce
+* Mapping des champs POST → attributs Brevo configurable en admin
+* Règles par source : dirigez chaque origine vers une liste Brevo différente
+* Journal des synchronisations (50 dernières entrées)
 * Test de connexion API intégré
-* Appel PHP direct via `WS_Brevo_FC_Sync::contact()` pour les développeurs
+* Hook `ws_brevo_fc_after_sync` pour extensions tierces
 
 == Installation ==
 
-1. Téléchargez et activez le plugin depuis l'administration WordPress.
-2. Rendez-vous dans **Brevo Connector** dans le menu d'administration.
-3. Saisissez votre clé API Brevo (disponible dans Brevo → Paramètres → Clés API & SMTP).
+1. Activez le plugin depuis l'administration WordPress.
+2. Rendez-vous dans **Brevo Connector** dans le menu.
+3. Saisissez votre clé API Brevo (Brevo → Paramètres → Clés API & SMTP).
 4. Renseignez l'ID de votre liste Brevo cible.
-5. Configurez le mapping des champs selon les noms utilisés dans vos formulaires.
-6. Testez la connexion depuis l'onglet Configuration.
+5. Configurez le mapping des champs si nécessaire.
 
 == Frequently Asked Questions ==
 
+= Quels plugins de formulaires sont supportés ? =
+
+Aucun en particulier — et c'est voulu. Le plugin expose un endpoint AJAX et une méthode PHP que vous branchez sur la source de votre choix.
+
+= Comment intégrer avec mon formulaire custom ? =
+
+Utilisez l'endpoint AJAX documenté dans l'onglet "Endpoint AJAX" de la page de configuration, ou appelez `WS_Brevo_FC_Sync::contact()` directement en PHP.
+
 = Comment trouver mon ID de liste Brevo ? =
 
-Dans Brevo, allez dans Contacts → Listes, cliquez sur votre liste. L'ID est visible dans l'URL de la page.
+Dans Brevo, allez dans Contacts → Listes, cliquez sur votre liste. L'ID est visible dans l'URL.
 
-= Comment trouver le Field Name d'un champ Avada ? =
+= Comment désactiver la sync pour une source précise ? =
 
-Dans le builder Avada, chaque champ de formulaire possède un paramètre "Field Name" (différent du label affiché). C'est cette valeur qu'il faut saisir dans le mapping.
-
-= Mon formulaire n'est pas dans la liste des builders supportés. Que faire ? =
-
-Utilisez l'endpoint AJAX universel documenté dans l'onglet "Endpoint AJAX" de la page de configuration. Il accepte les soumissions de n'importe quelle source.
-
-= Comment désactiver la sync sur un formulaire précis ? =
-
-Dans l'onglet "Règles par formulaire", ajoutez une règle avec l'ID du formulaire (visible dans le journal après une première soumission) et désactivez le toggle.
-
-= Peut-on appeler la sync depuis du code PHP custom ? =
-
-Oui : `WS_Brevo_FC_Sync::contact( 'email@example.com', ['PRENOM' => 'Jean'], 3, 'mon-hook' );`
+Dans l'onglet "Règles par source", ajoutez une règle avec l'identifiant de la source (visible dans le journal) et désactivez le toggle.
 
 == Changelog ==
+
+= 1.2.0 =
+* Suppression de tous les adaptateurs spécifiques aux builders de formulaires
+* Plugin entièrement indépendant de tout plugin tiers
+* Simplification de l'architecture : endpoint AJAX + API PHP uniquement
 
 = 1.1.0 =
 * Ajout endpoint AJAX universel (wp_ajax + wp_ajax_nopriv)
 * Nonce public injecté automatiquement en wp_footer
-* Ajout adaptateurs : Ninja Forms, Fluent Forms, Formidable Forms
-* Classe WS_Brevo_FC_Sync statique — point d'entrée unique appelable depuis du code custom
-* Guard anti-double-fire pour Avada (avada_form_submit + fusion_form_submit)
-* Hook post-sync ws_brevo_fc_after_sync pour extensions tierces
+* Classe WS_Brevo_FC_Sync statique — point d'entrée unique
+* Hook post-sync ws_brevo_fc_after_sync
 
 = 1.0.0 =
 * Version initiale
-* Support CF7, Gravity Forms, WPForms, Elementor Pro, Avada / Fusion Forms
-* Page d'administration avec charte WebStrategy
-* Mapping des champs configurable
-* Règles par formulaire avec liste Brevo spécifique
-* Journal des synchronisations (50 entrées)
-* Test de connexion API intégré

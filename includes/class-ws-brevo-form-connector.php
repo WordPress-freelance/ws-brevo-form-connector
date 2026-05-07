@@ -39,50 +39,20 @@ class WS_Brevo_Form_Connector {
         $this->loader->add_filter( 'admin_body_class',      $admin, 'add_admin_body_class' );
         $this->loader->add_action( 'admin_head',            $admin, 'inline_reset_css' );
 
-        // Actions admin-post
         $this->loader->add_action( 'admin_post_ws_brevo_fc_save_settings', $admin, 'save_settings' );
-
-        // AJAX admin uniquement (test API, clear log)
-        $this->loader->add_action( 'wp_ajax_ws_brevo_fc_test_api',  $admin, 'ajax_test_api' );
-        $this->loader->add_action( 'wp_ajax_ws_brevo_fc_clear_log', $admin, 'ajax_clear_log' );
+        $this->loader->add_action( 'wp_ajax_ws_brevo_fc_test_api',         $admin, 'ajax_test_api' );
+        $this->loader->add_action( 'wp_ajax_ws_brevo_fc_clear_log',        $admin, 'ajax_clear_log' );
     }
 
     private function define_public_hooks() {
         $public = new WS_Brevo_FC_Public( $this->plugin_name, $this->version );
 
-        // Nonce public en footer (pour l'endpoint AJAX nopriv)
+        // Nonce injecté en footer pour les appels JS nopriv
         $this->loader->add_action( 'wp_footer', $public, 'output_public_nonce' );
 
-        // ── Endpoint AJAX universel (priv + nopriv) ──────────────────────────
-        // Action : ws_brevo_fc_submit
-        // Accepte email, firstname, lastname, phone, company, list_id, form_id, nonce
+        // Endpoint AJAX — utilisateurs connectés et non connectés
         $this->loader->add_action( 'wp_ajax_ws_brevo_fc_submit',        $public, 'ajax_submit' );
         $this->loader->add_action( 'wp_ajax_nopriv_ws_brevo_fc_submit', $public, 'ajax_submit' );
-
-        // ── Contact Form 7 ───────────────────────────────────────────────────
-        $this->loader->add_action( 'wpcf7_mail_sent', $public, 'handle_cf7', 10, 1 );
-
-        // ── Gravity Forms ────────────────────────────────────────────────────
-        $this->loader->add_action( 'gform_after_submission', $public, 'handle_gravity', 10, 2 );
-
-        // ── WPForms ──────────────────────────────────────────────────────────
-        $this->loader->add_action( 'wpforms_process_complete', $public, 'handle_wpforms', 10, 4 );
-
-        // ── Elementor Forms (Pro) ────────────────────────────────────────────
-        $this->loader->add_action( 'elementor_pro/forms/new_record', $public, 'handle_elementor', 10, 2 );
-
-        // ── Avada / Fusion Forms ─────────────────────────────────────────────
-        $this->loader->add_action( 'avada_form_submit',  $public, 'handle_avada', 10, 2 );
-        $this->loader->add_action( 'fusion_form_submit', $public, 'handle_avada', 10, 2 );
-
-        // ── Ninja Forms ──────────────────────────────────────────────────────
-        $this->loader->add_action( 'ninja_forms_after_submission', $public, 'handle_ninja', 10, 1 );
-
-        // ── Fluent Forms ─────────────────────────────────────────────────────
-        $this->loader->add_action( 'fluentform_after_submission', $public, 'handle_fluent', 10, 3 );
-
-        // ── Formidable Forms ─────────────────────────────────────────────────
-        $this->loader->add_action( 'frm_after_create_entry', $public, 'handle_formidable', 10, 2 );
     }
 
     public function run() { $this->loader->run(); }
