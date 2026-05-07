@@ -1,83 +1,108 @@
 <?php
+declare(strict_types=1);
+
 namespace WsBrevoFC\Tests\Unit;
 
-use WP_Mock;
 use WP_Mock\Tools\TestCase;
-use WS_Brevo_FC_Activator;
+use WP_Mock;
 
+/**
+ * Tests for WS_Brevo_FC_Activator.
+ */
 class ActivatorTest extends TestCase {
 
-    /** Expected option defaults with their default values. */
-    private function expectedOptions(): array {
-        return [
-            'ws_brevo_fc_api_key'         => '',
-            'ws_brevo_fc_default_list_id' => '',
-            'ws_brevo_fc_trigger_field'   => 'ws-brevo-sync',
-            'ws_brevo_fc_field_email'     => 'email',
-            'ws_brevo_fc_field_firstname' => 'firstname',
-            'ws_brevo_fc_field_lastname'  => 'lastname',
-            'ws_brevo_fc_field_phone'     => 'phone',
-            'ws_brevo_fc_field_company'   => 'company',
-            'ws_brevo_fc_form_rules'      => '[]',
-            'ws_brevo_fc_sync_log'        => '[]',
-            'ws_brevo_fc_db_version'      => '1.3.0',
+    public function test_activate_registers_all_default_options() {
+        $expected_options = [
+            'ws_brevo_fc_api_key',
+            'ws_brevo_fc_default_list_id',
+            'ws_brevo_fc_trigger_field',
+            'ws_brevo_fc_field_email',
+            'ws_brevo_fc_field_firstname',
+            'ws_brevo_fc_field_lastname',
+            'ws_brevo_fc_field_phone',
+            'ws_brevo_fc_field_company',
+            'ws_brevo_fc_form_rules',
+            'ws_brevo_fc_sync_log',
+            'ws_brevo_fc_db_version',
         ];
-    }
 
-    public function test_activate_calls_add_option_for_each_default(): void {
-        foreach ( $this->expectedOptions() as $key => $value ) {
-            // Option does not exist yet → add_option should be called
-            WP_Mock::userFunction( 'get_option' )
-                ->with( $key )
-                ->andReturn( false );
+        // All options are absent on a fresh install
+        WP_Mock::userFunction('get_option', [
+            'return' => false,
+            'times'  => count($expected_options),
+        ]);
 
-            // 4th argument must be false (autoload disabled)
-            WP_Mock::userFunction( 'add_option' )
-                ->with( $key, $value, '', false )
-                ->once();
+        // Each add_option must be called with autoload = false
+        foreach ($expected_options as $option) {
+            WP_Mock::userFunction('add_option', [
+                'args'   => [$option, \WP_Mock\Functions\AnyValue::class, '', false],
+                'return' => true,
+                'times'  => 1,
+            ]);
         }
 
-        WS_Brevo_FC_Activator::activate();
+        \WS_Brevo_FC_Activator::activate();
 
         $this->assertConditionsMet();
     }
 
-    public function test_activate_skips_add_option_when_option_already_exists(): void {
-        foreach ( $this->expectedOptions() as $key => $value ) {
-            // Option already exists → get_option returns non-false
-            WP_Mock::userFunction( 'get_option' )
-                ->with( $key )
-                ->andReturn( 'some-existing-value' );
-        }
+    public function test_activate_skips_options_that_already_exist() {
+        // get_option returns a non-false value → option already exists
+        WP_Mock::userFunction('get_option', [
+            'return' => 'existing-value',
+        ]);
 
-        // add_option must NOT be called for any key
-        WP_Mock::userFunction( 'add_option' )->never();
+        // add_option must NOT be called at all
+        WP_Mock::userFunction('add_option', [
+            'times' => 0,
+        ]);
 
-        WS_Brevo_FC_Activator::activate();
+        \WS_Brevo_FC_Activator::activate();
 
         $this->assertConditionsMet();
     }
 
-    public function test_activate_uses_autoload_false_as_fourth_argument(): void {
-        // Spot-check on a single option that autoload = false
-        $checked = 'ws_brevo_fc_api_key';
+    public function test_activate_sets_correct_default_for_trigger_field() {
+        // Simulate all options absent except ws_brevo_fc_trigger_field
+        WP_Mock::userFunction('get_option', [
+            'return' => false,
+        ]);
 
-        foreach ( $this->expectedOptions() as $key => $value ) {
-            WP_Mock::userFunction( 'get_option' )->with( $key )->andReturn( false );
+        $trigger_default_set = false;
 
-            if ( $key === $checked ) {
-                WP_Mock::userFunction( 'add_option' )
-                    ->with( $checked, $value, '', false )
-                    ->once();
-            } else {
-                WP_Mock::userFunction( 'add_option' )
-                    ->with( $key, $value, '', false )
-                    ->andReturn( true );
-            }
-        }
+        WP_Mock::userFunction('add_option', [
+            'return' => function($key, $value, $deprecated, $autoload) use (&$trigger_default_set) {
+                if ($key === 'ws_brevo_fc_trigger_field') {
+                    $trigger_default_set = ($value === 'ws-brevo-sync' && $autoload === false);
+                }
+                return true;
+            },
+        ]);
 
-        WS_Brevo_FC_Activator::activate();
+        \WS_Brevo_FC_Activator::activate();
 
-        $this->assertConditionsMet();
+        $this->assertTrue($trigger_default_set, 'Trigger field default should be "ws-brevo-sync" with autoload=false');
+    }
+
+    public function test_activate_sets_autoload_false_on_all_options() {
+        WP_Mock::userFunction('get_option', ['return' => false]);
+
+        $autoload_violations = [];
+
+        WP_Mock::userFunction('add_option', [
+            'return' => function($key, $value, $deprecated, $autoload) use (&$autoload_violations) {
+                if ($autoload !== false) {
+                    $autoload_violations[] = $key;
+                }
+                return true;
+            },
+        ]);
+
+        \WS_Brevo_FC_Activator::activate();
+
+        $this->assertEmpty(
+            $autoload_violations,
+            'These options have autoload != false: ' . implode(', ', $autoload_violations)
+        );
     }
 }
