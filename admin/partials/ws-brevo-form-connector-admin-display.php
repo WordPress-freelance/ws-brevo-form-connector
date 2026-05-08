@@ -56,17 +56,40 @@ $ajax_url      = admin_url( 'admin-ajax.php' );
             <button type="button" class="wsbfc-btn wsbfc-btn-ghost" id="wsbfc-toggle-key"><?php esc_html_e( 'Show', 'ws-brevo-form-connector' ); ?></button>
             <button type="button" class="wsbfc-btn wsbfc-btn-ghost" id="wsbfc-test-api"><?php esc_html_e( 'Test connection', 'ws-brevo-form-connector' ); ?></button>
           </div>
-          <div class="wsbfc-hint"><?php esc_html_e( 'Found in Brevo → Settings → API Keys & SMTP.', 'ws-brevo-form-connector' ); ?></div>
           <div id="wsbfc-test-result" class="wsbfc-test-result"></div>
         </div>
 
-        <div class="wsbfc-field">
+        <div class="wsbfc-api-guide">
+          <div class="wsbfc-api-guide-title">
+            <?php esc_html_e( 'How to get your Brevo API key', 'ws-brevo-form-connector' ); ?>
+          </div>
+          <ol class="wsbfc-api-guide-steps">
+            <li><?php
+              printf(
+                /* translators: %s: URL to Brevo login page */
+                wp_kses( __( 'Go to <a href="%s" target="_blank" rel="noopener noreferrer">app.brevo.com</a> and log in to your account.', 'ws-brevo-form-connector' ), array( 'a' => array( 'href' => array(), 'target' => array(), 'rel' => array() ) ) ),
+                'https://app.brevo.com'
+              );
+            ?></li>
+            <li><?php esc_html_e( 'Click on your account name or avatar in the top-right corner of the page.', 'ws-brevo-form-connector' ); ?></li>
+            <li><?php esc_html_e( 'Select "SMTP & API" from the dropdown menu.', 'ws-brevo-form-connector' ); ?></li>
+            <li><?php esc_html_e( 'Click the "API Keys" tab.', 'ws-brevo-form-connector' ); ?></li>
+            <li><?php esc_html_e( 'Click "Generate a new API key".', 'ws-brevo-form-connector' ); ?></li>
+            <li><?php esc_html_e( 'Give it a name (e.g. "WordPress — My Site") so you can identify it later.', 'ws-brevo-form-connector' ); ?></li>
+            <li><?php esc_html_e( 'Click "Generate". Copy the key immediately — it will only be shown once.', 'ws-brevo-form-connector' ); ?></li>
+            <li><?php esc_html_e( 'Paste it in the field above and click "Save settings".', 'ws-brevo-form-connector' ); ?></li>
+          </ol>
+        </div>
+
+        <div class="wsbfc-field" style="margin-top:20px;">
           <label class="wsbfc-label" for="ws_brevo_fc_default_list_id"><?php esc_html_e( 'Default List ID', 'ws-brevo-form-connector' ); ?></label>
           <input type="number" id="ws_brevo_fc_default_list_id" name="ws_brevo_fc_default_list_id"
                  class="wsbfc-input" style="max-width:160px;"
                  value="<?php echo esc_attr( $list_id ); ?>"
                  placeholder="e.g. 3" min="1" />
-          <div class="wsbfc-hint"><?php esc_html_e( 'Visible in Brevo → Contacts → Lists → list URL.', 'ws-brevo-form-connector' ); ?></div>
+          <div class="wsbfc-hint">
+            <?php esc_html_e( 'In Brevo, go to Contacts → Lists, click your list. The ID is visible in the page URL.', 'ws-brevo-form-connector' ); ?>
+          </div>
         </div>
       </div>
 
