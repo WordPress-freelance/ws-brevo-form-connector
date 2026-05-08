@@ -2,7 +2,7 @@
 Contributors: webstrategy
 Tags: brevo, sendinblue, email marketing, crm, ajax
 Requires at least: 5.6
-Tested up to: 6.7
+Tested up to: 6.8
 Requires PHP: 7.4
 Stable tag: 1.5.0
 License: GPLv2 or later
@@ -15,6 +15,11 @@ Sync contacts to Brevo via a universal AJAX endpoint and a PHP API. No form plug
 WS Brevo Form Connector is an infrastructure brick: it exposes an AJAX endpoint and a static PHP method to push contacts to Brevo from any source — custom HTML form, JavaScript, WordPress hook, or third-party plugin.
 
 The plugin has no dependency on any form builder.
+
+This plugin relies on the **Brevo** (formerly Sendinblue) third-party service to store contact data. By configuring and using this plugin, you agree to Brevo's terms of service and privacy policy:
+
+* [Brevo Terms of Service](https://www.brevo.com/legal/termsofuse/)
+* [Brevo Privacy Policy](https://www.brevo.com/legal/privacypolicy/)
 
 **How it works**
 
@@ -69,6 +74,18 @@ In the Routing Rules tab, add a rule with the form_id (shown in the sync log aft
 Yes:
 
 `WS_Brevo_FC_Sync::contact( 'john@example.com', [ 'PRENOM' => 'John', 'NOM' => 'Doe' ], 3, 'my-source' );`
+
+== Privacy Policy ==
+
+This plugin transmits personal data entered in your forms to the Brevo API (`https://api.brevo.com`), a third-party service operated by Brevo SAS.
+
+**What data is sent:** email address, and optionally first name, last name, phone number, and company name — only the fields present in the submitted form.
+
+**When data is sent:** only when a form submission contains the configured trigger field (a hidden input you add manually to forms you want to track). No data is collected passively or without a user actively submitting a form.
+
+**Who receives the data:** Brevo SAS. Data is processed according to Brevo's privacy policy: https://www.brevo.com/legal/privacypolicy/
+
+**Your responsibilities:** as the site owner, you are responsible for informing your users that their contact data will be stored in Brevo, and for obtaining any consent required by applicable law (GDPR, CCPA, etc.). We recommend updating your site's privacy policy accordingly.
 
 == Changelog ==
 
