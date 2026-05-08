@@ -1,0 +1,25 @@
+name: Deploy to WordPress.org
+
+on:
+  workflow_dispatch:
+    inputs:
+      plugin_slug:
+        description: 'Plugin slug (e.g., ws-brevo-form-connector, ws-scheduler, etc.)'
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install SVN
+        run: sudo apt-get install -y subversion
+      
+      - name: Deploy to WordPress.org
+        uses: 10up/action-wordpress-plugin-deploy@stable
+        env:
+          SVN_USERNAME: ${{ secrets.WORDPRESS_ORG_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.WORDPRESS_ORG_PASSWORD }}
+          SLUG: ${{ github.event.inputs.plugin_slug }}
