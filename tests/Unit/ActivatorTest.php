@@ -11,7 +11,23 @@ use WP_Mock;
  */
 class ActivatorTest extends TestCase {
 
-    public function test_activate_registers_all_default_options() {
+    public function test_activate_calls_add_option_for_each_default_option() {
+        // All options absent on fresh install
+        WP_Mock::userFunction('get_option', [
+            'return' => false,
+        ]);
+
+        // add_option must be called — capture all calls
+        $calls = [];
+        WP_Mock::userFunction('add_option', [
+            'return' => function( $key, $value, $deprecated, $autoload ) use ( &$calls ) {
+                $calls[] = ['key' => $key, 'value' => $value, 'autoload' => $autoload];
+                return true;
+            },
+        ]);
+
+        \WS_Brevo_FC_Activator::activate();
+
         $expected_options = [
             'ws_brevo_fc_api_key',
             'ws_brevo_fc_default_list_id',
@@ -26,54 +42,36 @@ class ActivatorTest extends TestCase {
             'ws_brevo_fc_db_version',
         ];
 
-        // All options are absent on a fresh install
-        WP_Mock::userFunction('get_option', [
-            'return' => false,
-            'times'  => count($expected_options),
-        ]);
-
-        // Each add_option must be called with autoload = false
-        foreach ($expected_options as $option) {
-            WP_Mock::userFunction('add_option', [
-                'args'   => [$option, \WP_Mock\Functions\AnyValue::class, '', false],
-                'return' => true,
-                'times'  => 1,
-            ]);
+        $registered = array_column($calls, 'key');
+        foreach ($expected_options as $opt) {
+            $this->assertContains($opt, $registered, "Missing option: $opt");
         }
-
-        \WS_Brevo_FC_Activator::activate();
-
-        $this->assertConditionsMet();
+        $this->assertCount(count($expected_options), $calls);
     }
 
     public function test_activate_skips_options_that_already_exist() {
-        // get_option returns a non-false value → option already exists
         WP_Mock::userFunction('get_option', [
-            'return' => 'existing-value',
+            'return' => 'already-set',
         ]);
 
-        // add_option must NOT be called at all
+        $called = false;
         WP_Mock::userFunction('add_option', [
-            'times' => 0,
+            'return' => function() use (&$called) { $called = true; return true; },
         ]);
 
         \WS_Brevo_FC_Activator::activate();
 
-        $this->assertConditionsMet();
+        $this->assertFalse($called, 'add_option must not be called when options already exist');
     }
 
-    public function test_activate_sets_correct_default_for_trigger_field() {
-        // Simulate all options absent except ws_brevo_fc_trigger_field
-        WP_Mock::userFunction('get_option', [
-            'return' => false,
-        ]);
+    public function test_activate_sets_trigger_field_default_to_ws_brevo_sync() {
+        WP_Mock::userFunction('get_option', ['return' => false]);
 
-        $trigger_default_set = false;
-
+        $trigger_value = null;
         WP_Mock::userFunction('add_option', [
-            'return' => function($key, $value, $deprecated, $autoload) use (&$trigger_default_set) {
+            'return' => function($key, $value) use (&$trigger_value) {
                 if ($key === 'ws_brevo_fc_trigger_field') {
-                    $trigger_default_set = ($value === 'ws-brevo-sync' && $autoload === false);
+                    $trigger_value = $value;
                 }
                 return true;
             },
@@ -81,18 +79,17 @@ class ActivatorTest extends TestCase {
 
         \WS_Brevo_FC_Activator::activate();
 
-        $this->assertTrue($trigger_default_set, 'Trigger field default should be "ws-brevo-sync" with autoload=false');
+        $this->assertSame('ws-brevo-sync', $trigger_value);
     }
 
-    public function test_activate_sets_autoload_false_on_all_options() {
+    public function test_activate_uses_autoload_false_on_every_option() {
         WP_Mock::userFunction('get_option', ['return' => false]);
 
-        $autoload_violations = [];
-
+        $violations = [];
         WP_Mock::userFunction('add_option', [
-            'return' => function($key, $value, $deprecated, $autoload) use (&$autoload_violations) {
+            'return' => function($key, $value, $deprecated, $autoload) use (&$violations) {
                 if ($autoload !== false) {
-                    $autoload_violations[] = $key;
+                    $violations[] = $key;
                 }
                 return true;
             },
@@ -101,8 +98,8 @@ class ActivatorTest extends TestCase {
         \WS_Brevo_FC_Activator::activate();
 
         $this->assertEmpty(
-            $autoload_violations,
-            'These options have autoload != false: ' . implode(', ', $autoload_violations)
+            $violations,
+            'These options have autoload !== false: ' . implode(', ', $violations)
         );
     }
 }

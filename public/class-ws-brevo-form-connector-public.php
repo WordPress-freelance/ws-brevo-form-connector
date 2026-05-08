@@ -74,6 +74,7 @@ class WS_Brevo_FC_Public {
     public function ajax_submit() {
         if ( ! check_ajax_referer( 'ws_brevo_fc_public', 'nonce', false ) ) {
             wp_send_json_error( array( 'message' => __( 'Invalid nonce.', 'ws-brevo-form-connector' ) ), 403 );
+            return;
         }
 
         $email   = sanitize_email( wp_unslash( $_POST['email']   ?? '' ) );
@@ -96,5 +97,6 @@ class WS_Brevo_FC_Public {
         } else {
             wp_send_json_error( array( 'message' => $result['msg'] ), 400 );
         }
+        return;
     }
 }

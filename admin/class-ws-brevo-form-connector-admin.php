@@ -134,11 +134,13 @@ class WS_Brevo_FC_Admin {
         check_ajax_referer( 'ws_brevo_fc_nonce', 'nonce' );
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( __( 'Access denied.', 'ws-brevo-form-connector' ) );
+            return;
         }
 
         $api_key = get_option( 'ws_brevo_fc_api_key', '' );
         if ( empty( $api_key ) ) {
             wp_send_json_error( __( 'API key not configured.', 'ws-brevo-form-connector' ) );
+            return;
         }
 
         $response = wp_remote_get( 'https://api.brevo.com/v3/account', array(
@@ -148,6 +150,7 @@ class WS_Brevo_FC_Admin {
 
         if ( is_wp_error( $response ) ) {
             wp_send_json_error( $response->get_error_message() );
+            return;
         }
 
         $code = wp_remote_retrieve_response_code( $response );
@@ -162,14 +165,17 @@ class WS_Brevo_FC_Admin {
         } else {
             wp_send_json_error( $body['message'] ?? ( 'HTTP ' . $code ) );
         }
+        return;
     }
 
     public function ajax_clear_log() {
         check_ajax_referer( 'ws_brevo_fc_nonce', 'nonce' );
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_send_json_error( __( 'Access denied.', 'ws-brevo-form-connector' ) );
+            return;
         }
         update_option( 'ws_brevo_fc_sync_log', '[]' );
         wp_send_json_success();
+        return;
     }
 }

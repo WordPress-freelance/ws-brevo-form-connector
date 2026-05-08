@@ -12,7 +12,24 @@ define('WS_BREVO_FC_PLUGIN_URL',  'https://example.com/wp-content/plugins/ws-bre
 
 WP_Mock::bootstrap();
 
-// Load plugin classes under test — no WP bootstrap needed, WP_Mock stubs all globals
+// Stub WordPress classes — not provided by WP_Mock, needed for Mockery mocks
+if ( ! class_exists( 'WP_Error' ) ) {
+    class WP_Error {
+        private string $message;
+        public function __construct( string $code = '', string $message = '' ) {
+            $this->message = $message;
+        }
+        public function get_error_message(): string { return $this->message; }
+    }
+}
+
+if ( ! class_exists( 'WP_Screen' ) ) {
+    class WP_Screen {
+        public string $id = '';
+    }
+}
+
+// Load plugin classes under test
 require_once dirname(__DIR__) . '/includes/class-ws-brevo-form-connector-sync.php';
 require_once dirname(__DIR__) . '/includes/class-ws-brevo-form-connector-activator.php';
 require_once dirname(__DIR__) . '/includes/class-ws-brevo-form-connector-deactivator.php';
