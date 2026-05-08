@@ -13,7 +13,7 @@ class WS_Brevo_FC_Admin {
 
     public function plugin_action_links( $links ) {
         $custom = array(
-            '<a href="https://plugins.wordpress-freelance.com" target="_blank" rel="noopener">' . __( 'More plugins', 'ws-brevo-form-connector' ) . '</a>',
+            '<a href="https://plugin.wordpress-freelance.com" target="_blank" rel="noopener">' . __( 'More plugins', 'ws-brevo-form-connector' ) . '</a>',
             '<a href="' . admin_url( 'admin.php?page=' . $this->plugin_name ) . '">' . __( 'Settings', 'ws-brevo-form-connector' ) . '</a>',
         );
         return array_merge( $custom, $links );
