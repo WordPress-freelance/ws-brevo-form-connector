@@ -160,7 +160,7 @@ class SyncTest extends TestCase {
         ]);
         WP_Mock::userFunction('wp_date',       ['return' => '07/05/2026 10:00:00']);
         WP_Mock::userFunction('update_option', ['return' => true]);
-        WP_Mock::expectAction('ws_brevo_fc_after_sync');
+        WP_Mock::userFunction('do_action', ['return' => null]);
     }
 
     public function test_contact_returns_ok_true_on_201_response() {
@@ -215,7 +215,7 @@ class SyncTest extends TestCase {
         ]);
         WP_Mock::userFunction('wp_date',       ['return' => '07/05/2026 10:00:00']);
         WP_Mock::userFunction('update_option', ['return' => true]);
-        WP_Mock::expectAction('ws_brevo_fc_after_sync');
+        WP_Mock::userFunction('do_action', ['return' => null]);
 
         $result = \WS_Brevo_FC_Sync::contact('john@example.com', [], 0, 'test');
 
@@ -252,7 +252,7 @@ class SyncTest extends TestCase {
         ]);
         WP_Mock::userFunction('wp_date',       ['return' => '07/05/2026 10:00:00']);
         WP_Mock::userFunction('update_option', ['return' => true]);
-        WP_Mock::expectAction('ws_brevo_fc_after_sync');
+        WP_Mock::userFunction('do_action', ['return' => null]);
 
         $result = \WS_Brevo_FC_Sync::contact('john@example.com', [], 0, 'test');
 

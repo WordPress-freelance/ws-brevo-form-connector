@@ -12,6 +12,14 @@ define('WS_BREVO_FC_PLUGIN_URL',  'https://example.com/wp-content/plugins/ws-bre
 
 WP_Mock::bootstrap();
 
+// Native stubs for simple WordPress utility functions — no need to mock these
+if ( ! function_exists( 'absint' ) ) {
+    function absint( $value ): int { return abs( (int) $value ); }
+}
+if ( ! function_exists( 'wp_unslash' ) ) {
+    function wp_unslash( $value ) { return is_array($value) ? array_map('wp_unslash', $value) : stripslashes((string) $value); }
+}
+
 // Stub WordPress classes — not provided by WP_Mock, needed for Mockery mocks
 if ( ! class_exists( 'WP_Error' ) ) {
     class WP_Error {

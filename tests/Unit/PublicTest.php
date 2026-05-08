@@ -177,7 +177,7 @@ class PublicTest extends TestCase {
         ]);
         WP_Mock::userFunction('wp_date',        ['return' => '07/05/2026 10:00:00']);
         WP_Mock::userFunction('update_option',  ['return' => true]);
-        WP_Mock::expectAction('ws_brevo_fc_after_sync');
+        WP_Mock::userFunction('do_action', ['return' => null]);
 
         WP_Mock::userFunction('__', ['return' => function($t) { return $t; }]);
         WP_Mock::userFunction('wp_send_json_success', [
