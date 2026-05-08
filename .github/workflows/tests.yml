@@ -50,7 +50,7 @@ jobs:
           retention-days: 14
 
       - name: Upload Clover to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         if: matrix.php == '8.1'
         with:
           files: coverage/clover.xml
