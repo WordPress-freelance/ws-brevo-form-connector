@@ -87,29 +87,63 @@ This plugin transmits personal data entered in your forms to the Brevo API (`htt
 
 **Your responsibilities:** as the site owner, you are responsible for informing your users that their contact data will be stored in Brevo, and for obtaining any consent required by applicable law (GDPR, CCPA, etc.). We recommend updating your site's privacy policy accordingly.
 
+== Screenshots ==
+
+1. Configuration tab — Brevo API key field with step-by-step guide and trigger field setup.
+2. Field Mapping tab — Map your form field names to Brevo contact attributes.
+3. AJAX Endpoint tab — Universal endpoint documentation with JS and PHP code examples.
+4. Sync Log tab — Last 50 sync entries with status, source, target list, and error details.
+
 == Changelog ==
 
+= 1.5.0 =
+* Admin: step-by-step API key guide in Configuration tab (fully i18n)
+* Admin: updated Default List ID hint with clearer instructions
+* readme.txt: Tested up to 6.8, Privacy Policy section, Brevo ToS and Privacy Policy links
+* Assets: 4 wordpress.org screenshots (1200x900)
+* .pot: 67 translatable strings
+
+= 1.4.3 =
+* Tests: absint native stub in bootstrap, replace expectAction with userFunction do_action
+* CI: codecov-action updated to v5 (Node.js 22)
+* Chore: removed stray phpunit.xml.dist
+
+= 1.4.2 =
+* Fix: admin inputs use hard hex colors with !important — WordPress admin CSS override proof
+* Fix: box-shadow reset on inputs to neutralise WP focus ring
+
+= 1.4.1 =
+* Fix: Avada white frame — add #wpbody to reset selectors, use #14121C instead of transparent
+* Fix: never reset margin on #wpcontent (WordPress sidebar layout preservation)
+
+= 1.4.0 =
+* Added plugin SVG logo in assets/
+* Added plugin_action_links: Settings and More plugins links in the plugin list
+
 = 1.3.2 =
-* Removed `map_attributes()` — dead code, no longer needed
+* Removed map_attributes() — dead code, no longer needed after AJAX endpoint refactor
 
 = 1.3.1 =
-* Simplified `ajax_submit`: direct Brevo attribute mapping, removed redundant option remapping
+* Simplified ajax_submit: direct Brevo attribute mapping, removed redundant option remapping
 
 = 1.3.0 =
 * Added configurable trigger field (opt any form in via a hidden input)
 * All source code comments and strings in English
-* Full i18n — 57 strings extracted to .pot file
-* Public JS restored: intercepts all form submits, checks trigger field, fire-and-forget AJAX
+* Full i18n — strings extracted to .pot file
+* Public JS: intercepts all form submits, checks trigger field, fire-and-forget AJAX
 * Removed public/css directory
 * All add_option calls use autoload = false
 
 = 1.2.0 =
 * Removed all form builder-specific adapters — plugin is now fully standalone
+* No dependency on any form plugin
 
 = 1.1.0 =
 * Added universal AJAX endpoint (wp_ajax + wp_ajax_nopriv)
+* Nonce injected automatically in wp_footer via wp_localize_script
 * Added WS_Brevo_FC_Sync static class as single sync entry point
-* Added ws_brevo_fc_after_sync action hook
+* Added ws_brevo_fc_after_sync action hook for third-party extensions
+* Unit tests (WP_Mock + PHPUnit 9), GitHub Actions CI with coverage matrix PHP 7.4 to 8.2
 
 = 1.0.0 =
 * Initial release
