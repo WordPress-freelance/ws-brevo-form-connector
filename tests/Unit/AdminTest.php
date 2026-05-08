@@ -33,7 +33,7 @@ class AdminTest extends TestCase {
         $result = $this->admin->plugin_action_links(['<a href="#">Deactivate</a>']);
 
         $this->assertCount(3, $result);
-        $this->assertStringContainsString('plugins.wordpress-freelance.com', $result[0]);
+        $this->assertStringContainsString('plugin.wordpress-freelance.com', $result[0]);
         $this->assertStringContainsString('Settings', $result[1]);
         $this->assertStringContainsString('Deactivate', $result[2]);
     }
